@@ -49,21 +49,34 @@ namesNoHeadinz <- namesNoHeadinz[,-3]
 
 #Passing everything in to function to make sure names across everything remains consistent
 #The second list: indexes columns to keep from the dataframes to re-attach after re-coding
-
+#All others: common variable name and, for each dataframe, columns to sum
+#(or just a single column)
 fiveCensusCombo <- list(list(seventy1,eighty1,ninety1_LBS,twoThousand1,twoThEleven),#all data to sum columns on
-                        list('1','2','1,2','1','1'),#columns to keep from those
-                        list('England','3','3','3','2','2'),#Common name of column, index of columns to combine in order
-                        list('Scotland','4','4','4','3','4'),#doing in strings cos typing all this in lists here would be reet messy
-                        list('Wales','5','5','5','5','5'),
-                        list('Rest of UK','6','6','6,7,8,9','4,6,9','3,6,7')#Leaving out 91/01 "ireland part not specified"
-                        )
+  list('1','2','1,2','1','1'),#columns to keep from those
+  list('England','3','3','3','2','2'),#Common name of column, index of columns to combine in order
+  list('Scotland','4','4','4','3','4'),#doing in strings cos typing all this in lists here would be reet messy
+  list('Wales','5','5','5','5','5'),
+  list('Rest of UK','6','6','6:9','4,6,9','3,6:7'),#Leaving out 91/01 "ireland part not specified"
+  list('Irish Republic','7','7','10','7','8'),
+  list('Old Commonwealth','8','8','12:14','59,65:66','48,54:55'),#Canada, Oz, New Zealand
+  #list('Africa','9','9:10','15:25,72:78','32:41','27:32'),#No: this doesn't split new commonwealth out
+  list('Africa (New-C)','9','9:10','15:25','34:35,37:38,40','27,29,31'),
+  list('India','12','12','35','55','40'),
+  list('Pakistan','13','17','36','56','41'),
+  list('Other Europe','16','18:19','47:69,71','10:26,28:31','9:23,26'),
+  list('\"Far East\" (New-C)','14','14','38:40','47,49:50','37,43,45'),#Quote marks because racist! But very specific Colonial categories
+  list('\"America\ (New-C)"','10','11','26:33','61:62','53'),
+  list('New Commonwealth other','11,15','13,15:16','34,37,41:46','42,57,54','39'),
+  list('Rest of World','17','20','70,72:92',
+       '27,32:33,36,39,41,43:46,48,51:53,58,60,63:64,67:68','28,30,32')
+)
 
 #Returns list of re-coded dataframes
 #"Error: column_recode_lists_are_all_correct_length not equal to TRUE"
 #Means lists defining recodes aren't all of a length that recodes in each dataframe
 results <- recode(fiveCensusCombo)
 
-looksee <- results[[4]]
+looksee <- results[[5]]
 
 
 
