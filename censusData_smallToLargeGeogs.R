@@ -91,9 +91,61 @@ writeOGR(result11, "StitchOutputs/1971_to_2011_CoB_raw",
          "2011_CoB_from_11OAs_to_91_postcodeSectors", driver="ESRI Shapefile", overwrite_layer = T)
 
 
+#~~~~~~~~
+#1991 just merging----
+#Everything else being re-coded to 91 postcode sectors so these just need directly linking
+#Get zones and data
+#New copy to attach data to
+PC91 <- readOGR(dsn="C:/Data/MapPolygons/Scotland/1991/Scotland_postcodesectors_1991", 
+                       layer="scotland_pcs_1991_uniqueIDsperRow_LochsRemoved")
 
+#postcode-sector level CoB data
+cob91pc <- read.csv("VariableCoding/CountryOfBirth_fiveCensusRecodes/91.csv")
 
+#Postcode sector data contains rows of zeroes - suspect this is the Lochs. (They do actually have postcodes!)
+#896 - lower than we have zones for. Not ideal! What's the crack?
+unique(cob91pc$Zone.name) %>% length
 
+cob91pc <- arrange(cob91pc,Zone.name)
+
+#If I remove zeroes rows, do we still have duplicate IDs?
+cob91pc$rowmeans <- rowMeans(cob91pc[,3:16])
+
+#Now only 802 rows. OKkkk... really?
+cob91pc2 <- cob91pc[rowMeans(cob91pc[,3:16])!=0,]
+#Yup!
+nrow(cob91pc %>% filter(rowmeans != 0))
+
+#Are some of these zero rows actually in the zone list? 171 of these
+#(Bearing in mind I haven't yet checked the postcode format's the same in both)
+pcsZeroRows <- as.character(unique( cob91pc$Zone.name[cob91pc$rowmeans==0] ))
+
+#None. But let's just check...
+table ( as.character(pcsZeroRows) %in% lrg@data$label ) 
+table ( as.character(cob91pc2$Zone.name) %in% as.character(lrg@data$label) )
+
+#Lots of spaces in the census data postcodes. I think they're all set length in the zone data...
+#Should be 5. This is 5.0033
+mean(nchar(as.character(lrg@data$label)))
+
+#I see one that's the wrong length. They need to be five: 
+#variable length first part requires a space to e.g. tell between PH17 2 and PH1 72
+#Oh wait. No it doesn't: it'll always just be one digit in the inward then chars.
+#https://en.wikipedia.org/wiki/Postcodes_in_the_United_Kingdom#Formatting
+#Yup: sector is one character
+
+#But which ones here don't stick to five-char?
+lrg@data$label[nchar(as.character(lrg@data$label))!=5]
+
+#IV13 7 PH32 4 PH35 4
+#We already know there's a "PH354" neighbouring "PH35 4" (so I think the same zone but need to check in data)
+#What about those other two? QGIS check to see where...
+#No, it's just that one that's (probably) the same zone. 
+#Or, by geocode checks, actualyl "PH32 4" (north neighbour)
+
+#Before proceeding: check on census data postcodes.
+#1. remove trailing spaces
+cob91pc2$Zone.name <- trimws( as.character(cob91pc2$Zone.name), which = 'right' )
 
 
 

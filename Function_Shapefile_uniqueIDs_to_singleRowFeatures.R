@@ -22,6 +22,7 @@ IDtoSingleRow <- function(shp, IDindex) {
   
     #Dissolve down to individual polygons by ID
     #ID goes into the row names. Loses any attached data
+    #cf. http://www.inside-r.org/packages/cran/maptools/docs/unionSpatialPolygons
     dissolve <- gUnaryUnion(shp, id = shp@data[,IDindex])
     
     #Convert back to spatialpolygonDF with ID as zone ID
