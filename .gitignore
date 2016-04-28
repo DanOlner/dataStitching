@@ -10,3 +10,5 @@
 .Rhistory
 .Rproj.user
 .RData
+*.Rproj
+*.pyc

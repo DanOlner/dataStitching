@@ -7,11 +7,13 @@ lapply(geolibs, require, character.only = TRUE)
 #its: intersect SpatialPolygonsDataframe
 #dta: data to re-assign from small to large (small zone IDs should match those in intersect)
 #lrg: large-zone shapefile to attach data to.
-#gIDs: column for geo-ID for small zones
-#gIDb: column for geo-ID for large zones
+#gIDs: column for geo-ID for small zones (in the intersect)
+#gIDb: column for geo-ID for large zones (in the intersect)
 #ID: column for ID in data
+#lrgID: index for ID column in the large zone shapefile
+#(cos name from the intersect is sometimes overwritten if there's a clash)
 #datacols: columns of data to re-assign zone
-moveData <- function(its,dta,lrg,gIDs,gIDb,ID,datacols){
+moveData <- function(its,dta,lrg,gIDs,gIDb,ID,lrgID,datacols){
   
   #Get names of data columns to re-assign
   namez <- names(dta)[datacols]
@@ -66,7 +68,7 @@ moveData <- function(its,dta,lrg,gIDs,gIDb,ID,datacols){
   #Zone to sum by will be in first column, via above cbind assignment
   izResult <- aggregate(mrg2[,namez],by=list(mrg2[,1]),sum)
   
-  izData <- merge(lrg,izResult,by.x = "interzone", by.y = "Group.1")
+  izData <- merge(lrg,izResult,by.x = names(lrg)[lrgID], by.y = "Group.1")
   
   #Return the resulting re-assigned census values in shapefile form
   return(izData)

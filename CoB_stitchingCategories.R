@@ -78,6 +78,12 @@ results <- recode(fiveCensusCombo)
 
 looksee <- results[[5]]
 
+#Save as five dataframes, ready for geog re-assigning (apart from '91 which is correct already)
+savens <- c('71','81','91','01','11')
+
+lapply(1:5,function(x) write.csv(results[[x]], 
+                                 paste0("VariableCoding/CountryOfBirth_fiveCensusRecodes/",savens[x],".csv"),
+                                 row.names = F))
 
 
 

@@ -115,6 +115,72 @@ writeOGR(ed81link, "C:/Data/temp/MigrationIntersectTests/linkResults81_11",
          "ed81_81to11_data", driver="ESRI Shapefile", overwrite_layer = T)
 
 
+#~~~~~~~~~~~~~
+#2001 OAs-----
+OA2001 <- readOGR(dsn="C:/Data/MapPolygons/Scotland/2001/Scotland_outputareas_2001", 
+               layer="scotland_oa_2001")
+
+#Check whether 2001 OA zones have unique IDs per row...
+OA2001_df <- data.frame(OA2001)
+unique(OA2001_df$name) %>% length()
+
+#Newp! Pick those out for a look in QGIS again.
+OA2001dups <- subset(OA2001,duplicated(OA2001@data$name)|
+                       duplicated(OA2001@data$name,fromLast = T))
+
+writeOGR(OA2001dups, "C:/Data/temp/MigrationIntersectTests/random",
+         "2001OA_dups", driver="ESRI Shapefile", overwrite_layer = T)
+
+#Yup, usual story. Process to dissolved again.
+OA2001_uniqueIDsingleRow <- IDtoSingleRow(OA2001,1)
+
+writeOGR(OA2001_uniqueIDsingleRow, "C:/Data/MapPolygons/Scotland/2001/Scotland_outputareas_2001", 
+         "scotland_oa_2001_dissolvedTo_OneIDperRow", driver="ESRI Shapefile", overwrite_layer = T)
+
+#~~~~~~~~~~~~~
+#2011 OAs-----
+OA2011 <- readOGR(dsn="C:/Data/MapPolygons/Scotland/2011/Scotland_output_areas_2011", 
+                  layer="scotland_oac_2011")
+
+#Check whether 2001 OA zones have unique IDs per row...
+#Yes!
+OA2011_df <- data.frame(OA2011)
+unique(OA2011_df$name) %>% length()
+
+#~~~~~~~~~~~
+#1991 Postcode sectors----
+PC91 <- readOGR(dsn="C:/Data/MapPolygons/Scotland/1991/Scotland_postcodesectors_1991", 
+                  layer="scotland_pcs_1991")
+
+#Check whether IDs are unique per row...
+PC91_df <- data.frame(PC91)
+unique(PC91$label) %>% length()
+
+#And! There are also a lot of "Loch"s in there. Don't want them, eh?
+#How many? 23
+PC91_df %>% filter(label == "Loch") %>% nrow
+
+#Well let's drop those
+PC91 <- PC91[PC91$label != "Loch",]
+
+#Nowhere near! 909 (once lochs removed) to 1197. Let's look again...
+PC91dups <- subset(PC91,duplicated(PC91$label)|
+                       duplicated(PC91$label,fromLast = T))
+
+writeOGR(PC91dups, "C:/Data/temp/MigrationIntersectTests/random",
+         "PC91dups", driver="ESRI Shapefile", overwrite_layer = T)
+
+#Yup, same. Save non-Loch single-ID version. Postcode in column 2
+#Update: runs fine on original load, but not when Lochs removed
+#Running on original first...
+PC91_uniqueIDsingleRow <- IDtoSingleRow(PC91,2)
+
+#... *then* removing Lochs
+PC91_uniqueIDsingleRow <- PC91_uniqueIDsingleRow[PC91_uniqueIDsingleRow@data$label != "Loch",]
+
+#Check. Yup, all good.
+writeOGR(PC91_uniqueIDsingleRow, "C:/Data/MapPolygons/Scotland/1991/Scotland_postcodesectors_1991", 
+         "scotland_pcs_1991_uniqueIDsperRow_LochsRemoved", driver="ESRI Shapefile", overwrite_layer = T)
 
 
 
