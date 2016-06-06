@@ -1,7 +1,7 @@
 #Function: takes in a QGIS/python generated intersection shapefile
 #A data CSV matching the smaller geography
 #Re-assigns that data by area
-geolibs <- c("ggmap","rgdal","rgeos","maptools","dplyr","tidyr","tmap","raster", "dplyr", "tidyr","assertthat")
+geolibs <- c("dplyr", "tidyr","assertthat","ggmap","rgdal","rgeos","maptools","dplyr","tidyr","tmap","raster")
 lapply(geolibs, require, character.only = TRUE)
 
 #its: intersect SpatialPolygonsDataframe
@@ -62,7 +62,9 @@ moveData <- function(its,dta,lrg,gIDs,gIDb,ID,lrgID,datacols){
   
   #Only need to keep new large zone ID and data to be multiplied by fraction
   #(Having previously verified this function works!)
-  mrg2 <- cbind(mrg[,names(its_df)[gIDb]],mrg[,namez] * mrg$fraction)
+  #Drop = F stops conversion to vector if single column. Which *really* shouldn't be necessary
+  #If I want conversion, I can do that myself...
+  mrg2 <- cbind(mrg[,names(its_df)[gIDb], drop = F],mrg[,namez, drop = F] * mrg$fraction)
   
   #Sum fractions to large zone totals
   #Zone to sum by will be in first column, via above cbind assignment
