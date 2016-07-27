@@ -1,24 +1,149 @@
 source("Function_DataFromSmalltoLargeGeog.R")
 
+geolibs <- c("spdep","dplyr", "tidyr","assertthat","ggmap","rgdal","rgeos","maptools","dplyr","tidyr","tmap","raster")
+lapply(geolibs, require, character.only = TRUE)
+
 #Census: household number and economic activity variables for 71 to 11
 #All need varying degrees of tidying, combining or lookuping
 
-#1.Households (not the same as dwellings, but...)
-#1971: 'total households' is a single column. Just needs geog re-assign
-hse71 <- read.csv("1971/Scotland/1971Scotland_privateHouseholds.csv")
+#the shapefile being assigned to
+lrg <- readOGR(dsn="C:/Data/MapPolygons/Scotland/1991/pseudoPCS_aggregated4CorrectCount", 
+               layer="pseudoPCS_aggregated4CorrectCount")
 
-#1981: tenure. A single column again. 
-#Some problems with zeroes - could do some work to re-assign based on neighbouring values 
-#being too far from some SD threshold (given those zeros are stuck into neighbours)
-#But for now, leave alone
-hse81 <- read.csv("1981/Scotland/scots_1981_tenure.csv")
+#~~~~~~~~~~~~~~~~~~~~~
+#2001 country of birth----
+
+#Get the data
+cob01 <- read.csv("VariableCoding/CountryOfBirth_threeCensusRecodes_to91LBS/01_OA.csv")
+
+#Get the intersect geog:
+its01 <- readOGR(dsn="Intersects/scots_3censusLBS_91PCSzeroCountIsTargetGeog", 
+               layer="2001OAsTo91PCSzerocount")
+
+its_smallZoneIDColumn <- 1
+its_largeZoneIDColumn <- 2
+dta_zoneIDcolumn <- 1
+lrgID <- 1#cos it won't always match lrg name in intersect cos of clashes e.g. "label_2"
+datacols <- c(2:41)#from dta
+
+result <- moveData(its,cob01,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols)
+
+#save result!
+# writeOGR(result, "StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/CountryOfBirth",
+#          "2001_CountryOfBirthRecode_91LBS_noZeroPCS", driver="ESRI Shapefile", overwrite_layer = T)
+
+#Better column abbreviation
+writeSpatialShape(result,"StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/CountryOfBirth/2001_CountryOfBirthRecode_91LBS_noZeroPCS.shp")
+
+#~~~~~~~~~~~~~~~~~~~~~
+#2011 country of birth----
+
+#Get the data
+cob11 <- read.csv("VariableCoding/CountryOfBirth_threeCensusRecodes_to91LBS/11_OA.csv")
+
+#Get the intersect geog:
+its <- readOGR(dsn="Intersects/scots_3censusLBS_91PCSzeroCountIsTargetGeog", 
+               layer="2011OAsTo91PCSzerocount")
+
+df <- data.frame(its)
+
+its_smallZoneIDColumn <- 14
+its_largeZoneIDColumn <- 21
+dta_zoneIDcolumn <- 1
+lrgID <- 1#cos it won't always match lrg name in intersect cos of clashes e.g. "label_2"
+datacols <- c(2:41)#from dta
+
+result <- moveData(its,cob11,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols)
+
+#save result!
+# writeOGR(result, "StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/CountryOfBirth",
+#          "2001_CountryOfBirthRecode_91LBS_noZeroPCS", driver="ESRI Shapefile", overwrite_layer = T)
+
+#Better column abbreviation
+writeSpatialShape(result,"StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/CountryOfBirth/2011_CountryOfBirthRecode_91LBS_noZeroPCS.shp")
+
+#~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~
+#2001 employment----
+ea01 <- read.csv("2001/Scotland/2001_Scots_economicallyActive.csv")
+
+#We actually have the right columns to start with - EA and unempl.
+#Just need to change names
+names(ea01) <- c("ZoneCode","EA","Unempl")
+
+#Get the intersect geog:
+its01 <- readOGR(dsn="Intersects/scots_3censusLBS_91PCSzeroCountIsTargetGeog", 
+                 layer="2001OAsTo91PCSzerocount")
+
+its_smallZoneIDColumn <- 1
+its_largeZoneIDColumn <- 2
+dta_zoneIDcolumn <- 1
+lrgID <- 1#cos it won't always match lrg name in intersect cos of clashes e.g. "label_2"
+datacols <- c(2:3)#from dta
+
+result <- moveData(its01,ea01,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols)
+
+#debugonce(moveData(its,hse71,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols))
+
+#%employed - do AFTER geog summing! Or %s get aggregated into zones...
+result@data$percentEmployed <- (1 - (result@data$Unempl/result@data$EA)) * 100
+
+#save result!
+writeSpatialShape(result,
+  "StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/Employment/2001_econActive_91LBS_noZeroPCS.shp")
+
+
+#~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~
+#2011 employment----
+
+#After some processing in the previous 5 census work
+ea11 <- read.csv("2011/Scotland/OutputAreaStd_ALL/KS601SCtidy_zeroscommasremoved.csv")
+
+#Find economically active total vs EA unemployed
+names(ea11)
+#This works but data.frame allows naming of columns directly...
+#ea11agg <- do.call(cbind, list(ea11[,1,drop = F],apply( ea11[,c(3:5)],1,sum)  ))
+ea11agg <- data.frame(ZoneCode = ea11[,1,drop = F],
+                      EA = (apply( ea11[,c(3:6)],1,sum)),
+                      Unempl = ea11[,6])
+
+its11 <- readOGR(dsn="Intersects/scots_3censusLBS_91PCSzeroCountIsTargetGeog", 
+               layer="2011OAsTo91PCSzerocount")
+
+its_smallZoneIDColumn <- 14
+its_largeZoneIDColumn <- 21
+dta_zoneIDcolumn <- 1
+lrgID <- 1#cos it won't always match lrg name in intersect cos of clashes e.g. "label_2"
+datacols <- c(2:3)#from dta
+
+result <- moveData(its11,ea11agg,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols)
+
+#save result!
+# writeOGR(result, "StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/CountryOfBirth",
+#          "2001_CountryOfBirthRecode_91LBS_noZeroPCS", driver="ESRI Shapefile", overwrite_layer = T)
+
+result@data$percentEmployed <- (1 - (result@data$Unempl/result@data$EA)) * 100
+
+
+#Better column abbreviation
+writeSpatialShape(result,"StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/Employment/2011_econActive_91LBS_noZeroPCS.shp")
+
+
+#**------------ 
+
+#STUFF FROM PREVIOUS------
+
+
+
+
+
 
 #1991: tenure, single column again
 hse91 <- read.csv("1991/Scotland/Scotland_1991_tenure_totalHouseholds/Scotland_1991_tenure_totalHouseholds.csv")
 
 #2001: single column. 
 hse01 <- read.csv("2001/Scotland/Scotland_2001_amenities_countAllHouseholds.csv")
-
 
 #We also have a count of actual dwellings to compare to here
 #Could perhaps see if there's some spatial pattern to the difference?

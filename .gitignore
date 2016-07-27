@@ -8,10 +8,12 @@
 /2011/*
 /temp/*
 /Housing/*
+/R_outputs/*
 /Definitions/*
 /.Rproj.user/*
 .Rhistory
 .Rproj.user
 .RData
+.sync/*
 *.Rproj
 *.pyc

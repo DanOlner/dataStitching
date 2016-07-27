@@ -146,6 +146,71 @@ pop91a <- left_join(pop91,pop91oa_agg,by=c('Zone.ID'='pcs_label'))
 
 #So far so good. The sums are also exact. This may be doable.
 
+#~~~~~~~~~~~~~~~~~~~
+#Some zone-checking----
+
+#~~~~~~~~~~~~
+#Check it's the same zones with differences in the other tables
+#Use CoB as example
+cob91OA <- read.csv("1991/Scotland/1991_Scotland_SAS_CoB_OutputAreas/1991_Scotland_SAS_CoB_OutputAreas__noMaleFemale_countyNamesAdded.csv")
+
+#Yup, same in this table - can nest em
+cob91$Zone.ID %in% substr(cob91OA$Zone.ID,1,6) %>% table
+
+cob91OA$pcs_label <- substr(cob91OA$Zone.ID,1,6)
+
+#Aggregate by PCS. Use England/Scotland sums as example
+cob91oa_agg <- cob91OA %>% group_by(pcs_label) %>% 
+  summarise(EngfromOAs = sum(England), ScotFromOAs = sum(Scotland))
+
+#Attach back to pop in pcs
+cob91_chk <- left_join(cob91,cob91oa_agg,by=c('Zone.ID'='pcs_label'))
+
+#Drop ones we don't need to look at
+cob91_chk <- cob91_chk %>% dplyr::select(Zone.ID:Scotland,EngfromOAs:ScotFromOAs)
+
+cob91_chk$missingEng <- cob91_chk$England - cob91_chk$EngfromOAs
+cob91_chk$missingScots <- cob91_chk$Scotland - cob91_chk$ScotFromOAs
+
+#~~~~~~~~~~~~~~
+#Check again with different table. Economic position...
+#Output areas
+ep91oa <- read.csv("1991/Scotland/Scots_1991_SAS_economicPosition/Scots_1991_SAS_economicPosition.csv")
+
+#Postcode sector
+ep91pcs <- read.csv("1991/Scotland/Scots_1991_LBS_economicPosition_PostcodeSector/Scots_1991_LBS_economicPosition_PostcodeSector.csv")
+
+#output area comes in male/female breakdown - need to sum.
+#Let's compare 'economically active' in both.
+#ep91oa male female EA is 12 and 166
+ep91oa$econActiveTotal <- ep91oa$s080012 + ep91oa$s080166
+
+#Can now do comparison...
+#Tick on zones again
+ep91pcs$Zone.ID %in% substr(ep91oa$Zone.ID,1,6) %>% table
+
+ep91oa$pcs_label <- substr(ep91oa$Zone.ID,1,6)
+
+#Aggregate by PCS. Use England/Scotland sums as example
+ep91oa_agg <- ep91oa %>% group_by(pcs_label) %>% 
+  summarise(EA_from_OA = sum(econActiveTotal))
+
+#Attach back to pop in pcs
+ep91_chk <- left_join(ep91pcs,ep91oa_agg,by=c('Zone.ID'='pcs_label'))
+
+#Drop ones we don't need to look at
+cob91_chk <- cob91_chk %>% dplyr::select(Zone.ID:Scotland,EngfromOAs:ScotFromOAs)
+
+#They're all looking... sort of roughly in the right place! 
+#Definitely worth checking. First point: the zero zones *are* all in the same place
+#Which they wouldn't be if they'd all been calculated individually.
+#And it would be madness to do it by table.
+#The problem with picking up on them here is small counts at OA level - I think.
+
+
+#~~~~~~~~~~
+#Back to reassigns----
+
 #Let's have a go at picking out those to be combined into one zone
 #First-up: pick the PCS zero rows. The OA values in this row are the ones
 #That will have been re-assigned to another row.
