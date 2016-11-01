@@ -9,6 +9,7 @@
 /temp/*
 /Housing/*
 /R_outputs/*
+/R_data/*
 /Definitions/*
 /.Rproj.user/*
 .Rhistory

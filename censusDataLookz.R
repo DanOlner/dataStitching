@@ -1,9 +1,7 @@
 #Look at the five and three census data, see what we have.
 geolibs <- c("ggplot2","RColorBrewer","spdep","ggmap","rgdal","rgeos","maptools","dplyr","tidyr","tmap","raster", "dplyr", "tidyr","assertthat",
-             "data.table")
+             "data.table","pryr","geoR")
 lapply(geolibs, require, character.only = TRUE)
-
-library(pryr)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Five census CoB----
@@ -404,7 +402,7 @@ ggsave("R_outputs/5census_engScotRest_percent.png",output,width = 7,height = 4)
 #Get 3 census economically active data------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#Load all the CoB 5-census data
+#Load all the CoB 3-census data
 threeCensus91_EA <- readShapeSpatial("C:/Data/Census/StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/Employment/1991_econActive_91LBS_noZeroPCS_straightMatch.shp")
 threeCensus01_EA <- readShapeSpatial("C:/Data/Census/StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/Employment/2001_econActive_91LBS_noZeroPCS.shp")
 threeCensus11_EA <- readShapeSpatial("C:/Data/Census/StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/Employment/2011_econActive_91LBS_noZeroPCS.shp")
@@ -504,11 +502,11 @@ output <- ggplot(house_n_EA_q2, aes(x = percentEmp, y = meanPrice,
   #facet_wrap(~year) +
   facet_wrap(~year, scales = 'free') +
   #facet_wrap(~year, scales = 'free') +
-  annotate("segment", x = 80, xend = 80, y = -1, yend = 125000,colour = "grey", size = 2) +
+  annotate("segment", x = 80, xend = 80, y = 0, yend = 125000,colour = "grey", size = 2) +
   #annotate("segment", x = 2.5, xend = 4, y = 15, yend = 25,colour = "grey") +
     #facet_wrap(~year, scales = 'free_y') +
-#   scale_x_log10() +
-#   scale_y_log10() +
+   #scale_x_log10() +
+   #scale_y_log10() +
   geom_point(size = 1.5)
 
 output
@@ -1429,15 +1427,20 @@ perZoneCoBprops_3censusLONG_EA <- perZoneCoBprops_3censusLONG_EA %>%
 #restrict results to glasgow/edinburgh...
 #perZoneCoBprops_3censusLONG_EA <- merge(perZoneCoBprops_3censusLONG_EA,PCS_ttwas[,c(1,4)],by = 'label')
 
+#TTWA
+getCity <- 'Edinburgh'
+#getCity <- 'Glasgow'
 
-city <- perZoneCoBprops_3censusLONG_EA %>% filter(name == "Glasgow")
+city <- perZoneCoBprops_3censusLONG_EA %>% filter(name == getCity)
 #city <- perZoneCoBprops_3censusLONG_EA %>% filter(name == "Edinburgh")
+
+#highlightCoB <- 'England'
 
 #reorder... when we know what
 #Ah: need to restrict to locations where particular CoBs are *mostly* going
 #So pick a certain top % of each CoB group in each 
 #http://stackoverflow.com/questions/1563961/how-to-find-top-n-of-records-in-a-column-of-a-dataframe-using-r
-top <- 20
+top <- 10
 
 for(yr in seq(1991,2011, by = 10)){
 #yr = 2011
@@ -1459,33 +1462,58 @@ topPercent <- topPercent %>%
 #Or do, cos it's ugly. Try and colour by CoB consistently.
 topPercentYear <- topPercent %>% filter(year == yr)
 
-#order in the chart's going to be median...
-topPercentYear$CoB <- reorder(topPercentYear$CoB, -topPercentYear$median)
-
 #Some faff getting consistent colour
 #Match a key against alphatical order of countries...
 #This is the order they appear in the chart.
-countries <- data.frame(countries = levels(topPercentYear$CoB), 
-                        num = 1:(levels(topPercentYear$CoB) %>% length))
 
-countries <- countries[order(countries$countries),]
-countries$newnum <- 1:nrow(countries)
-#reorder by this. Should give us our consistent country alphabetical ref
-countries <- countries[order(countries$num),]
+#do this for first year, keep the same order...
+if(yr==1991){
 
-cols2 <- cols[countries$newnum]
+  countries <- data.frame(countries = levels(topPercentYear$CoB), 
+                          num = 1:(levels(topPercentYear$CoB) %>% length))
+  
+  countries <- countries[order(countries$countries),]
+  countries$newnum <- 1:nrow(countries)
+  #reorder by this. Should give us our consistent country alphabetical ref
+  countries <- countries[order(countries$num),]
+  
+  cols2 <- cols[countries$newnum]
+  
+  #For using to order vars
+  ninetyOneOrder <- topPercentYear[,c('CoB','median')] %>% 
+    distinct(CoB) %>% 
+    rename(median91 = median)
+
+}
+
+#Use 1991's order
+#order in the chart's going to be median...
+#Slightly fiddly cos different number of zones.
+#So merge in 1991 medians - they match against CoB
+topPercentYear2 <- merge(topPercentYear,ninetyOneOrder,by = 'CoB')
+
+#topPercentYear$CoB <- reorder(topPercentYear$CoB, -topPercentYear$median91)
+topPercentYear2$CoB <- reorder(topPercentYear2$CoB, -topPercentYear2$median91)
+
+#orig
+#topPercentYear$CoB <- reorder(topPercentYear$CoB, -topPercentYear$median)
+
 
 #Boxplot: per census year, which CoBs are locating in highest or lowest empl?
 #output <- ggplot(topPercent %>% filter(year == 2011),
 #Means from http://stackoverflow.com/questions/19876505/boxplot-show-the-value-of-mean
-output <- ggplot(topPercentYear,
+output <- ggplot(topPercentYear2,
   aes(x = CoB, y = percentEmp, fill = CoB)) +
   geom_boxplot() +
+  #geom_boxplot(data = subset(topPercentYear, CoB==highlightCoB), aes(x = CoB, y = percentEmp, fill = CoB), lwd=2) + 
   theme(axis.text.x = element_text(angle = 270, hjust = 0, vjust = 0)) +
   scale_fill_manual(values = cols2) +
   stat_summary(fun.y=mean, colour="darkred", geom="point", 
                shape=18, size=3,show_guide = FALSE) +
-  guides(fill = F)
+  guides(fill = F) +
+  coord_cartesian(ylim = c(75,100))#edinburgh
+  #coord_cartesian(ylim = c(60,100))#glasgow
+  
 
 output
 
@@ -1497,10 +1525,92 @@ output
 #               output,width = 8,height = 4)
 # ggsave(paste0("R_outputs/3censusBoxplots/edinburgh_top_n_employment_boxplot",yr,"_top_",top,"percent.png"),
 #               output,width = 8,height = 4)
-ggsave(paste0("R_outputs/3censusBoxplots/",top,"glasgow_top_n_employment_boxplot",yr,"_top_",top,"percent.png"),
+
+# ggsave(paste0("R_outputs/3censusBoxplots/",top,"glasgow_top_n_employment_boxplot",yr,"highlightCoB",highlightCoB,"_top_",top,"percent.png"),
+#               output,width = 8,height = 4)
+ggsave(paste0("R_outputs/3censusBoxplots/ordered1991/",top,"_",getCity,"_top_n_employment_boxplot",yr,"_top_",top,"percent.png"),
               output,width = 8,height = 4)
 
 }
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Three-census: CoB zone pop % vs EA: graphing over time------
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#So using same topPercent approach used above. Recreate here.
+
+#Initally for all zones
+city <- perZoneCoBprops_3censusLONG_EA
+# city <- perZoneCoBprops_3censusLONG_EA %>% filter(name == "Glasgow")
+
+topPercent <- city %>% 
+  group_by(year,CoB) %>% 
+  filter(percent > quantile(percent,prob=1-top/100))
+#top_n(10,percent)
+
+#Get median percent emply value and interquartiles
+topPercent <- topPercent %>% 
+  group_by(year,CoB) %>% 
+  mutate(median = median(percentEmp), 
+         bottomQtr = quantile(percentEmp)[2],
+         topQtr = quantile(percentEmp)[4])
+
+#CoB will have three unique median values, one for each census year
+#Can use that to get SD of its change
+topPercent <- topPercent %>% 
+  group_by(CoB) %>% 
+  mutate(sd = sd(unique(median)))
+
+chk <- topPercent %>% arrange(year,CoB)
+
+#What's SD look like?
+#Two outliers. Wonder what?
+hist(topPercent$sd)
+
+#~~~~~~~~~~~~~~~~
+dodge <- position_dodge(width=0.8)
+
+#select subset
+topPercentSub <- topPercent[topPercent$sd < 1.5,]
+topPercentSub <- topPercent
+topPercentSub <- topPercent[topPercent$sd > 4,]
+
+#plot over time
+output <- ggplot(topPercentSub, aes(x = year, y = median, colour = CoB, group = CoB)) +
+  geom_line() +
+  geom_errorbar(width = 0.1, 
+                aes(ymin=bottomQtr, 
+                    ymax=topQtr), 
+                position = dodge) 
+  
+output
+  
+#Output those in groups that are easier to look at
+CoBs <- unique(topPercent$CoB)
+sds <- unique(topPercent$sd)
+
+sds <- sds[order(sds)]
+
+#That said... I think I probably need to work with the rank in each year and how that's changed
+
+#~~~~~~~~~~~
+#Try with rank
+#For each census year, rank the median emply% for the top x% of the CoB group
+
+#Only need to keep rank position for the medians
+#not every zone value
+rankz <- topPercent %>% 
+  group_by(year,CoB) %>% 
+  summarise(median = max(median)) %>% 
+  group_by(year) %>% 
+  mutate(rank = rank(desc(median)))
+
+output <- ggplot(rankz, aes(x = year, y = rank, colour = CoB, group = CoB)) +
+  geom_line()
+
+output
+
+chk <- rankz[order(rankz$rank),]
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Five-census: CoB zone pop % vs EA, boxplots etc------
@@ -1551,6 +1661,9 @@ perZoneCoBprops_5censusLONG_EA <- merge(perZoneCoBprops_5censusLONG, allfive_EA_
                                         by = c('interzn','year'))
 
 names(perZoneCoBprops_5censusLONG_EA)[names(perZoneCoBprops_5censusLONG_EA)=='prcntEm'] <- 'percentEmp'
+
+#save that for use later. Takes a long while to recreate through backtracking
+saveRDS(perZoneCoBprops_5censusLONG_EA,"R_data/perZoneCoBprops_5censusLONG_EA.rds")
 
 #city <- perZoneCoBprops_5censusLONG_EA %>% filter(name == "Edinburgh")
 city <- perZoneCoBprops_5censusLONG_EA %>% filter(name == "Glasgow")
@@ -1621,6 +1734,778 @@ for(yr in seq(1971,2011, by = 10)){
          output,width = 8,height = 4)
   
 }
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Five-census: CoB zone pop % vs EA: graphing over time-----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#city <- perZoneCoBprops_5censusLONG_EA %>% filter(name == "Edinburgh")
+#city <- perZoneCoBprops_5censusLONG_EA %>% filter(name == "Glasgow")
+#city <- perZoneCoBprops_5censusLONG_EA
+
+#output for all TTWAs
+#Or just a selection, actually
+#for(ttwa in unique(perZoneCoBprops_5censusLONG_EA$name)) {
+for(ttwa in c('Glasgow','Edinburgh','Aberdeen')) {
+  
+#Highlight all the different CoBs
+  for(CoBz in unique(perZoneCoBprops_5censusLONG_EA$CoB)){
+  
+  city <-  perZoneCoBprops_5censusLONG_EA %>% filter(name == ttwa)
+  #city <-  perZoneCoBprops_5censusLONG_EA %>% filter(name == "Fraserburgh")
+
+  topPercent <- city %>% 
+    group_by(year,CoB) %>% 
+    filter(percent > quantile(percent,prob=1-top/100))
+  #top_n(10,percent)
+  
+  #Get median percent emply value and interquartiles
+  topPercent <- topPercent %>% 
+    group_by(year,CoB) %>% 
+    mutate(median = median(percentEmp), 
+           bottomQtr = quantile(percentEmp)[2],
+           topQtr = quantile(percentEmp)[4])
+  
+  #CoB will have three unique median values, one for each census year
+  #Can use that to get SD of its change
+  topPercent <- topPercent %>% 
+    group_by(CoB) %>% 
+    mutate(sd = sd(unique(median)))
+  
+  chk <- topPercent %>% arrange(year,CoB)
+  
+  #What's SD look like?
+  #Two outliers. Wonder what?
+  #hist(topPercent$sd)
+  
+  #RANK A TEE RANK RANK
+  rankz <- topPercent %>% 
+    group_by(year,CoB) %>% 
+    summarise(median = max(median)) %>% 
+    group_by(year) %>% 
+    mutate(rank = rank(desc(median)))
+  
+  #order factor by rank position in the last year
+  #Not working for all...
+  try(
+    rankz$CoB <- reorder(rankz$CoB[rankz$year == 2011], rankz$rank[rankz$year == 2011])
+  )
+  
+  #print("badger")
+  
+  output <- ggplot(rankz, aes(x = year, y = rank, colour = CoB)) +
+    scale_colour_manual(values=cbPalette) +
+    geom_line(size = 1, alpha = 0.35) +
+    geom_point(size = 2) + 
+    geom_line(data = rankz %>% filter(CoB == CoBz), size = 1.8, colour = 'white') +
+    geom_line(data = rankz %>% filter(CoB == CoBz), size = 1.5, colour = 'red',alpha = 0.75) +
+    geom_point(data = rankz %>% filter(CoB == CoBz), size = 3) +
+    scale_y_reverse() +
+    ggtitle(paste0(ttwa,'/',CoBz)) + 
+    theme(plot.title = element_text(lineheight=.8, face="bold"))
+  
+  output
+  
+  ggsave(
+    paste0("R_outputs/5census_TTWA_employmentRanks_CoBTop20percent_ScotlandHighlight/",
+           ttwa,"_",CoBz,".png"),
+         output,width = 6,height = 4)
+  
+  }
+  
+}
+
+
+
+chk <- rankz[order(rankz$rank),]
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#(NOT) Spatial variance-----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#Reasons for not doing this:
+#Variogram is gonna find all zero zones being close together. 
+#Not sure that's what I'm after. 
+#It's also going to pick up on correlations between cities - generally, I'm not sure I like it!
+
+#For which we'll need the actual coordinates
+# all3_wcoords <- cbind(data.frame(all3),coordinates(all3))
+# 
+# #eastings, northings
+# plot(all3_wcoords$`1`,all3_wcoords$`2`)
+# 
+# #one year
+# varz <- all3_wcoords %>% filter(year == 1991) %>% dplyr::select(-(1:2))
+# 
+# #I could use the function, or I could look at graphng *all* point-pair distances
+# #That would quickly get to be a lot of data, mind...
+# #But let's look.
+# 
+# CoB <- varz[,c(25,41:42)]
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Playing with spatial weights matrices: 3 census edition----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#Assuming 3C CoB data already loaded.
+
+#Save a couple of the dataframes I'm using before a clear-out
+saveRDS(all3_df,"R_data/all3_df.rds")
+saveRDS(all3_zoneProps,"R_data/all3_zoneProps.rds")
+#And the mx processed below for quick grabbing
+saveRDS(mx,"R_data/nearestNeighb_matrix.rds")
+#CoB props are the wrong orientation but this has got econ-active/housing data in it
+saveRDS(CoBprops3census,"R_data/CoBprops3census.rds")
+
+all3_df <- readRDS("R_data/all3_df.rds")
+all3_zoneProps <- readRDS("R_data/all3_zoneProps.rds")
+mx <- readRDS("R_data/nearestNeighb_matrix.rds")
+CoBprops3census <- readRDS("R_data/CoBprops3census.rds")
+
+
+#Get 8-nearest-neighbour contiguity matrix (normalised so we can get averages for nearby)
+mx <- as.matrix(
+  read.csv("StitchOutputs/Scotland/other/adjusted91PCS_spatialWeights_8nearestNeighb.csv")
+)
+#16 nn
+# mx <- as.matrix(
+#   read.csv("StitchOutputs/Scotland/other/adjusted91PCS_spatialWeights_16nearestNeighb.csv")
+# )
+# 
+#Using all3_df that's got em all in. Pick the 1st year.
+
+
+
+#Not funny. Not.
+clusterlook <- all3_df %>% filter(year == 1991)
+
+#check rows are in right order
+table(mx[,1] == clusterlook$label)
+
+#Proportions in each zone
+clusterlook <- prop.table(as.matrix(clusterlook[,c(3:41)]), margin = 1) * 100
+clusterlook <- data.frame(clusterlook)
+
+#Check
+table(apply(clusterlook,1,sum))
+
+#drop name row from matrix (don't need to keep names in row, we know it's in right order)
+mx <- mx[,-1]
+#Oh! Why was it character? Why would it load like that?
+apply(mx,1,class)
+
+mx <- as.numeric(mx)
+mx <- matrix(mx, nrow = 822, ncol = 822)
+table(apply(mx,1,class))
+
+#Check it's oriented correctly (since nearest-neighbours are not symmetrical)
+#Currently eight nearest neighbours, row-normalised, so the 0.125s should sum to 1
+#across rows
+table(apply(mx,1,sum))
+
+#And multiplying by an all 1s vector should produce the same result...
+mx %*% rep(1,822) %>% table
+
+#I think this is "which zones have me as neighbour"
+#Which with contiguity would be the same.
+#And yes, it's different. So first version has correct orientation.
+mxt <- t(mx)
+table(apply(mxt,1,sum))
+mxt %*% rep(1,822) %>% table
+
+#Get average of nearby zones via weights matrix
+#Works now after faffy numeric conversion. 
+#This? http://stackoverflow.com/questions/16518428/right-way-to-convert-data-frame-to-a-numeric-matrix-when-df-also-contains-strin
+#weightsMatrix <- mx %*% as.matrix(clusterlook$England)
+#weightsMatrix <- mx %*% seq(1:822)
+
+#weightsMatrix <- mx %*% clusterlook$England
+
+#plot(weightsMatrix,clusterlook$England)
+#Well that's startlingly linear!
+#plot(log(weightsMatrix),log(clusterlook$England))
+#cor(log(weightsMatrix),log(clusterlook$England))
+
+#We want to plot deviations from the mean
+#plot(weightsMatrix - mean(weightsMatrix),clusterlook$England - mean(clusterlook$England))
+
+#Run over all CoBs
+for(val in seq(1:39)){
+  weightsMatrix <- mx %*% clusterlook[,val]
+#   weightz <- log(weightsMatrix)
+#   eng <- log(clusterlook[,val])
+  weightz <- (weightsMatrix)
+  eng <- (clusterlook[,val])
+  
+  #plot(weightsMatrix - mean(weightsMatrix),clusterlook$England - mean(clusterlook$England))
+  #plot(weightz - mean(weightz),eng - mean(eng))
+  
+  jpeg(paste0('R_outputs/testSpatialWeights/16nearestNeighbours/',val,'.jpg'))
+  #plot(weightz - mean(weightz),eng - mean(eng))
+  plot(weightz,eng,main = paste0(names(clusterlook[val]),':',cor(weightz,eng) ))
+  dev.off()
+  
+  jpeg(paste0('R_outputs/testSpatialWeights/16nearestNeighbours/log/',val,'.jpg'))
+  plot(log(weightz),log(eng),main = paste0(names(clusterlook[val]),':',cor(weightz,eng) ))
+  dev.off()
+  
+}
+
+#check random pairings of CoBs to see what the patterns look like generally
+for(val in seq(1:500)){
+  
+  #Avoids Scotland
+  weightsSampleNum <- sample(c(1:13,15:39),1)
+  CoB_sampleNum <- sample(c(1:13,15:39),1)
+  #CoB_sampleNum <- 14#Scotland
+  
+  weightsMatrix <- mx %*% clusterlook[,weightsSampleNum]
+  #   weightz <- log(weightsMatrix)
+  #   eng <- log(clusterlook[,val])
+  weightz <- (weightsMatrix)
+  #Random 
+  eng <- (clusterlook[,CoB_sampleNum])
+  
+  #plot(weightsMatrix - mean(weightsMatrix),clusterlook$England - mean(clusterlook$England))
+  #plot(weightz - mean(weightz),eng - mean(eng))
+  
+#   jpeg(paste0('R_outputs/testSpatialWeights/8nearestNeighbours/',val,'.jpg'))
+#   #plot(weightz - mean(weightz),eng - mean(eng))
+#   plot(weightz,eng,main = paste0(names(clusterlook[val]),':',cor(weightz,eng) ))
+#   dev.off()
+  
+  jpeg(paste0('R_outputs/testSpatialWeights/8nearestNeighbours/randomCoBsLog/',val,'.jpg'))
+  plot(log(weightz),log(eng),main = 
+         paste0('Neighb av:',names(clusterlook[weightsSampleNum]),' vs pcs:',names(clusterlook[CoB_sampleNum]),
+                ':',cor(weightz,eng) ))
+  dev.off()
+  
+}
+
+#US vs Canada: huh?
+weightsMatrix <- mx %*% clusterlook[,38]
+weightz <- (weightsMatrix)
+pcs <- (clusterlook[,18])
+
+plot(log10(weightz),log10(pcs),main = 
+       paste0('Neighb av:',names(clusterlook[38]),' vs pcs:',names(clusterlook[18]),
+              ':',cor(weightz,pcs) ))
+
+plot((weightz),(pcs),main = 
+       paste0('Neighb av:',names(clusterlook[38]),' vs pcs:',names(clusterlook[18]),
+              ':',cor(weightz,pcs) ))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Test Geoff Meen regression on single set: 3-census----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#Predicting: the share of migrants from CoB i in zone j at time t 
+#latest census, or prev if we're looking at how it changes) is a function of:
+#From: 
+#The same share in a previous time period, in the same zones
+#The weighted matrix - 
+#i.e. the averaged values of surrounding areas for the same migrant group - in a previous time period
+#Also the sum of all other migrant groups from that previous time period.
+
+#Leaving out the various housing/labour market vars for the moment
+
+#So into one dataset, column for each
+#Picking one CoB to start with
+
+#Is CoBprops3census proportions per zone?
+#Newp! Needs redoing
+#apply(CoBprops3census[,c(1:39)], 2, sum)
+
+all3_zoneProps <-  prop.table(as.matrix(all3_df[,c(3:41)]), margin = 1) * 100
+
+all3_zoneProps <- data.frame(all3_zoneProps)
+
+#Add year and zone back in
+all3_zoneProps <- cbind(all3_zoneProps,all3_df[,c(1,42)])
+
+#check
+apply(all3_zoneProps[,c(1:39)], 1, sum)
+
+#Get spatial weights for all CoBs
+mx <- as.matrix(
+  read.csv("StitchOutputs/Scotland/other/adjusted91PCS_spatialWeights_8nearestNeighb.csv")
+)
+
+#Queen contiguity (so we'll lose the Islands but I'm not sure that matters too much for this)
+# mx <- as.matrix(
+#   read.csv("StitchOutputs/Scotland/other/adjusted91PCS_spatialWeightsQueenContig.csv")
+# )
+
+#Convert to numeric matrix
+#No: this is wrong way round
+#Important note: if using nearest neighbours, not continguity, it won't be symmetric
+#mx <- apply(mx[,c(2:ncol(mx))],1,as.numeric)
+
+mx <- mx[,-1]
+mx <- as.numeric(mx)
+mx <- matrix(mx, nrow = 822, ncol = 822)
+table(apply(mx,1,class))
+
+#weightsMatrix <- mx %*% clusterlook[,val]
+
+#Split! Returns list of dfs! Split into 3 censuses
+#http://stackoverflow.com/questions/9713294/split-data-frame-based-on-levels-of-a-factor-into-new-data-frames
+#Add resulting columns to this...
+weightsRez <- all3_zoneProps[,c(40,41)]
+
+#test <- mx %*% t(as.matrix(all3_zoneProps[,1:39]))
+
+for(cobnum in seq(1:39)){
+
+  #Will get resulting neighbour averages for this CoB for all 3 years
+  weightsMatrix <- lapply(split(all3_zoneProps, all3_zoneProps$year), 
+                          function(x) mx %*% x[,c(cobnum)])
+  
+  #Fastest apparently
+  #http://stackoverflow.com/questions/2851327/converting-a-list-of-data-frames-into-one-data-frame-in-r
+  weightsRez <- cbind(weightsRez,do.call(rbind,weightsMatrix))
+  
+}
+
+#rename cols to CoBs again
+names(weightsRez) <- c('label','year',names(all3_zoneProps[1:39]))
+
+#So in theory, that's all the neighbour averages found and stuck in weightsRez
+#For all three years
+
+#Get some images for correlations out
+#Current CoB vs previous census CoB (one of them)
+#vs current weights vs previous weights
+
+#Run over all CoBs
+#test
+test <- names(all3_zoneProps[,c(1:39)])
+val <- test[25]
+
+for(val in names(all3_zoneProps[,c(1:39)])){
+  
+  #assemble into columns
+  #This year's CoB is dependent on... 
+  colz <- all3_zoneProps %>% filter(year == 2011) %>% dplyr::select_(val) 
+  
+  #Last census's
+  colz <- cbind(colz, all3_zoneProps %>% filter(year == 2001) %>% dplyr::select_(val) )
+  colz <- cbind(colz, all3_zoneProps %>% filter(year == 1991) %>% dplyr::select_(val) )
+  
+  #And let's look at how it correlates to both present and lagged weights
+  colz <- cbind(colz, weightsRez %>% filter(year == 2011) %>% dplyr::select_(val))
+  colz <- cbind(colz, weightsRez %>% filter(year == 2001) %>% dplyr::select_(val))
+  colz <- cbind(colz, weightsRez %>% filter(year == 1991) %>% dplyr::select_(val))
+  
+  names(colz) <- c('2011','2001','1991','11_nn','01_nn','91_nn')
+  #names(colz) <- c('2011','2001','1991','11_nn','01_nn','91_nn')
+  
+  #pairs(log10(colz[,c(1,2,4,5)]))
+  #pairs((colz[,c(1,2,4,5)]))
+  
+  #jpeg(paste0('R_outputs/testSpatialWeights/pairs_queenContig/91-01/',val,'.jpg'), width = 800, height = 800)
+  jpeg(paste0('R_outputs/testSpatialWeights/pairs_queenContig/01-11/',val,'.jpg'), width = 800, height = 800)
+  #plot(weightz - mean(weightz),eng - mean(eng))
+  # pairs(log(colz[,c(1,2,4,5)]), main = val)
+  
+  #Only more than 1> in those zones
+  #pairs(log(colz[colz[,c(1:3)] > 1 ,c(2,3,5,6)]), main = val,
+  #Or all
+  #Removed log values - regression line can't deal with the NaNs that result
+  #(And there are likely quite a few zeroes)
+  
+  #pairs((colz[,c(2,3,5,6)]), main = val,
+  
+  #01-11
+  pairs((colz[,c(1,2,4,5)]), main = val,
+  #91-01
+  #pairs((colz[,c(2,3,5,6)]), main = val,
+        panel = function(x,y) {
+          points(x,y)
+          #abline(lm(y~x))
+          abline(a = 0, b = 1, col='red')
+        })
+  
+  #window.options(width = 800, height = 800)
+  
+  #Try cutting out low percents again. Or I could keep x highest values?
+  #Problem being, that list will change between censuses
+  #but could do relative to one particular census
+
+  
+  #pairs(log(colz[,c(2,3,5,6)]), main = val)
+  #plot(weightz,eng,main = paste0(names(clusterlook[val]),':',cor(weightz,eng) ))
+  dev.off()
+  
+  # jpeg(paste0('R_outputs/testSpatialWeights/pairs/log/',val,'.jpg'), width = 800, height = 800)
+  # 
+  # 
+  # #No regression line! Line of identity
+  # #pairs(log(colz[,c(2,3,5,6)]), main = val,
+  # pairs(log(colz[,c(1,2,4,5)]), main = val,
+  #       panel = function(x,y) {
+  #         points(x,y)
+  #         abline(a = 0, b = 1, col='red')
+  #       }
+  # )
+  # 
+  # dev.off()
+  #   jpeg(paste0('R_outputs/testSpatialWeights/pairs/log/',val,'.jpg'))
+#   plot(log(weightz),log(eng),main = paste0(names(clusterlook[val]),':',cor(weightz,eng) ))
+#   dev.off()
+   
+}
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Misc messinz----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#Just look at 91/01 weights matrices for...
+
+namez <- names(all3_zoneProps[,c(1:39)])
+#val <- namez[11]#Europe-other
+val <- namez[24]#India
+#val <- namez[7]#Caribbean
+#val <- namez[31]#Greece
+
+#val <- namez[39]#Iran
+
+#assemble into columns
+#This year's CoB is dependent on... 
+colz <- all3_zoneProps %>% filter(year == 2011) %>% dplyr::select_(val) 
+
+#Last census's
+colz <- cbind(colz, all3_zoneProps %>% filter(year == 2001) %>% dplyr::select_(val) )
+colz <- cbind(colz, all3_zoneProps %>% filter(year == 1991) %>% dplyr::select_(val) )
+
+#And let's look at how it correlates to both present and lagged weights
+colz <- cbind(colz, weightsRez %>% filter(year == 2011) %>% dplyr::select_(val))
+colz <- cbind(colz, weightsRez %>% filter(year == 2001) %>% dplyr::select_(val))
+colz <- cbind(colz, weightsRez %>% filter(year == 1991) %>% dplyr::select_(val))
+
+#names(colz) <- c('2011','2001','1991','11_nn','01_nn','91_nn')
+names(colz) <- c('twentyEleven','twoThousandOne','nineteenNinetyOne','eleven_nn','ohOne_nn','ninetyOne_nn')
+
+#Try running an actual regression on some of this. So...
+#Share of migrants in zone i from CoB j at time t is the dependent
+#regz <- lm(colz$`2011`~colz$`2001`+colz$`01_nn`)
+
+#regz <- lm(twentyEleven ~ twoThousandOne + ohOne_nn, data = colz)
+#Set intercept to zero
+#regz <- lm(twentyEleven ~ 0 + twoThousandOne + ohOne_nn, data = colz)
+#summary(regz)
+#plot(regz)
+
+#Weight vs weight
+plot(colz[,c(6,5)], main = val)
+#2011 vs 01nn
+plot(colz[,c(5,1)], main = val)
+#01 vs 91
+plot(log10(colz[colz[,c(3,2)]>0.5,c(3,2)]), main = val)
+plot(log(colz[colz[,c(3,2)]>0.5,c(3,2)]), main = val)
+plot((colz[colz[,c(3,2)]>0.5,c(3,2)]), main = val)
+
+#abline(a = -0.06667, b = 1.32, col='red')
+abline(a = 0, b = 1.15, col='red')
+abline(a = 0, b = 1, col='green')
+#lines(lowess(colz[,c(6,5)]))
+
+#identify(colz$`1991`, colz$`2001`, row.names(colz))
+identify(colz$`91_nn`, colz$`01_nn`, row.names(colz))
+
+pairs((colz[,c(2,3,5,6)]), main = val,
+      panel = function(x,y) {
+        points(x,y)
+        #abline(lm(y~x))
+        abline(a = 0, b = 1, col='red')
+      })
+
+#Iranian cluster in Glasgow
+#all3_df$label[534]
+#all3_df$label[c(509,510,535,536,537,538,539,540,729)]
+#'6341AS','6341AT','6341BW','6341BX','6341BY','6341BZ','6341CA','6341CB','6350AF'
+
+#Europe-other: the cluster in 91 that seemed to vanish in 01. Where?
+#all3_df$label[c(266,267,275,277,820,821)]
+#'6125AR','6125AS','6127AA','6127AC','6756AH','6756AJ'
+
+#Let's try that with ggplot
+#marking four quadrants split along the median
+#so we got half of total zones above and below
+
+#Save Europe other, have a look in the map...
+write.csv(cbind(threeCensus91@data$label,colz),"C:/Data/Census/QGIS/zonePercents/Caribbean_3census.csv",row.names = F)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Mantel test play----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Let's just look at a Mantel test type approach. I'm curious.
+#Distance between data vs physical distance
+
+#This has correct coords!
+iz <- readOGR(dsn="C:/Data/Census/StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/CountryOfBirth", 
+              layer="1991_CountryOfBirthRecode_91LBS_noZeroPCS_straightMatch")
+
+#Is this finding the centroids? Via
+#https://cran.r-project.org/web/packages/spdep/vignettes/nb_igraph.html
+coords <- coordinates(iz)
+geogDists <- spDists(coords)
+
+#And 'distances' for some value - let's pick on India, 2001 nearest neighb av
+#This is different: we need a full matrix of "distances" from a single value
+#for all other values. 
+#Full range of values, then the single value...
+valDists <- sapply(colz[,5], function(x) abs(colz[,5] - x))
+
+hist(valDists)
+
+#Seems to be the right number of points, though whether they're in the right order...
+#Well that was fairly useless!
+#oh well, yes, obviously: a lot of zero values will be next to each other
+#Doesn't distinguish high from low
+plot(geogDists,valDists)
+
+#Test summary is working...
+df <- data.frame(x = seq(1:1000), y = seq(1:1000), z = runif(1000,1,1000))
+model <- lm(y ~ x+z, data = df)
+model
+summary(model)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Testing movement to wealthier areas: India----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#Wanting to see for the India 01/91 nearest neighbour av change
+#Whether the drop in large zone % / gain in smaller ones
+#indicates movement to e.g. wealthier areas
+#So some colour labelling
+
+#Use econ stats attached to cobprops 3 census
+#Double-check they're in the right zone order
+(all3_zoneProps$label == CoBprops3census$label) %>% table
+
+#Good, can just attach cols then (broken down by year correctly)
+#Keep just economic vars
+econVars3census <- CoBprops3census %>% dplyr::select(year,meanPrice,percentEmp)
+
+#Separate column for each year
+#Would appear it's not set up for multiple cols
+#Aaaand an error! OK, doing manually...
+# econVars3census2 <- cbind(
+#   econVars3census %>% spread(meanPrice,year),
+#   econVars3census %>% spread(year,percentEmp)
+# )
+
+#Same order as other data, reverse date
+econVars3census2 <- do.call(cbind, c(
+  econVars3census %>% filter(year == 2011) %>% dplyr::select(meanPrice,percentEmp),
+  econVars3census %>% filter(year == 2001) %>% dplyr::select(meanPrice,percentEmp),
+  econVars3census %>% filter(year == 1991) %>% dplyr::select(meanPrice,percentEmp)
+)) %>% data.frame
+
+# econVars3census2 <- do.call(cbind, c(
+#   econVars3census %>% filter(year == 2011),
+#   econVars3census %>% filter(year == 2001),
+#   econVars3census %>% filter(year == 1991)
+# ))
+
+names(econVars3census2) <- c('meanPrice_11','percentEmp_11',
+                             'meanPrice_01','percentEmp_01',
+                             'meanPrice_91','percentEmp_91')
+
+#check we got houses in the right order
+apply(econVars3census2,2,summary)
+
+#save for mapping n shizzle
+write.csv(cbind(all3_df$label,econVars3census2),"R_data/econVars3Census.csv", row.names = F)
+
+#Set up for graphinz
+val <- namez[24]#India
+#val <- namez[39]#Iran
+
+#assemble into columns
+#This year's CoB is dependent on... 
+colz <- all3_zoneProps %>% filter(year == 2011) %>% dplyr::select_(val) 
+
+#Last census's
+colz <- cbind(colz, all3_zoneProps %>% filter(year == 2001) %>% dplyr::select_(val) )
+colz <- cbind(colz, all3_zoneProps %>% filter(year == 1991) %>% dplyr::select_(val) )
+
+#And let's look at how it correlates to both present and lagged weights
+colz <- cbind(colz, weightsRez %>% filter(year == 2011) %>% dplyr::select_(val))
+colz <- cbind(colz, weightsRez %>% filter(year == 2001) %>% dplyr::select_(val))
+colz <- cbind(colz, weightsRez %>% filter(year == 1991) %>% dplyr::select_(val))
+
+#names(colz) <- c('2011','2001','1991','11_nn','01_nn','91_nn')
+names(colz) <- c('twentyEleven','twoThousandOne','nineteenNinetyOne','eleven_nn','ohOne_nn','ninetyOne_nn')
+
+#attach econ data
+colz_econz <- cbind(colz,econVars3census2)
+
+
+#Weight vs weight vs %employment '01
+plot(colz_econz[,c(6,5)], main = val, col = ifelse(colz_econz[,10] < median(colz_econz[,10]),'red','green'))
+#Weight vs weight vs %employment '91
+plot(colz_econz[,c(6,5)], main = val, col = ifelse(colz_econz[,12] < median(colz_econz[,12]),'red','green'))
+#Weight vs weight vs %house price mean '91
+plot(colz_econz[,c(6,5)], main = val, col = ifelse(colz_econz[,9] < median(colz_econz[,9]),'red','green'))
+abline(a = 0, b = 1, col='green')
+
+plot(colz_econz[,c(10,9)], main = val)
+
+#Where are those in the larger % groups?
+identify(colz_econz$ninetyOne_nn, colz_econz$ohOne_nn, row.names(colz_econz))
+
+all3_df$label[c(505,506,507,508,509,517,518,529,530,566,567,568,580)]
+
+labelsCommaz <- gsub(" ","','","6341AA 6341AP 6341AQ 6341AR 6341AS 6341BB 6341BC 6341BP 6341BQ 6341DF 6341DG 6341DH 6341DX")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Comparing to zone total pop----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#Cos some zones with tiny pops.. not very relevant?
+#Checking again: yup, 100% in each zone
+table(apply(all3_zoneProps[,c(1:39)],1,sum))
+
+#sum pop per zone. Err. From?
+all3_zoneProps$totpop <- apply(all3_df[,c(3:41)],1,sum)
+
+hist(all3_zoneProps$totpop, breaks = 25)
+
+totpop <- all3_zoneProps[,c(40,42)]
+totpop <- totpop[order(totpop$totpop),]
+
+#Actually, the important thing is population per area amount of course.
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Use a range of NN weights matrices to get spatial decay of nearest-neighbour proportions----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+all3_zoneProps <-  prop.table(as.matrix(all3_df[,c(3:41)]), margin = 1) * 100
+
+all3_zoneProps <- data.frame(all3_zoneProps)
+
+#Add year and zone back in
+all3_zoneProps <- cbind(all3_zoneProps,all3_df[,c(1,42)])
+
+#check
+apply(all3_zoneProps[,c(1:39)], 1, sum)
+
+#Get all NN spatial weights matrices for all CoBs
+filez = list.files(path="StitchOutputs/Scotland/other/nearestNeighbour_range", 
+                   pattern = "*.csv",full.names = T)
+
+#Note: I forgot I'd done the matrix conversion here. It took a long time to track down!
+matrices = lapply(filez, function(x) as.matrix(read.csv(x)))
+
+#Convert to numeric matrix
+#No: this is wrong way round
+#Important note: if using nearest neighbours, not continguity, it won't be symmetric
+#mx <- apply(mx[,c(2:ncol(mx))],1,as.numeric)
+makeNumeric <- function(mxx){
+  
+  mxx <- mxx[,-1]
+  mxx <- as.numeric(mxx)
+  mxx <- matrix(mxx, nrow = 822, ncol = 822)
+  #print(class(mxx))
+  
+}
+
+matrices <- lapply(matrices, function(x) makeNumeric(x))
+
+
+
+
+listOfWeightsResults <- list()
+
+for(i in seq(1:length(matrices))){
+
+  #Split! Returns list of dfs! Split into 3 censuses
+  #http://stackoverflow.com/questions/9713294/split-data-frame-based-on-levels-of-a-factor-into-new-data-frames
+  #Add resulting columns to this...
+  weightsRez <- all3_zoneProps[,c(40,41)]
+  
+  #test <- mx %*% t(as.matrix(all3_zoneProps[,1:39]))
+  
+  for(cobnum in seq(1:39)){
+    
+    #Will get resulting neighbour averages for this CoB for all 3 years
+    weightsMatrix <- lapply(split(all3_zoneProps, all3_zoneProps$year), 
+                            function(x) matrices[[i]] %*% x[,c(cobnum)])
+    
+    #Fastest apparently
+    #http://stackoverflow.com/questions/2851327/converting-a-list-of-data-frames-into-one-data-frame-in-r
+    weightsRez <- cbind(weightsRez,do.call(rbind,weightsMatrix))
+    
+  }
+  
+  #rename cols to CoBs again
+  names(weightsRez) <- c('label','year',names(all3_zoneProps[1:39]))
+  
+  listOfWeightsResults[[i]] <- weightsRez
+
+}
+
+#So now got five different weight results worked out i.e. for all CoBs, av NN values over those five.
+#In this order in the list listOfWeightsResults:
+filez
+
+#So now if I want to look at values for a particular CoB
+#In a particular year?
+lookz <- listOfWeightsResults[[1]]
+
+#Assemble one for testing
+val <- namez[24]#India
+#val <- namez[39]#Iran
+
+yr <- 2011
+
+#assemble into columns
+#This year's CoB is dependent on... 
+nn_bins <- all3_zoneProps %>% filter(year == yr) %>% dplyr::select_(val) 
+
+#Get each nn band
+for(i in seq(1:length(listOfWeightsResults))){
+  
+  nn_bins <- cbind(nn_bins, listOfWeightsResults[[i]] %>% filter(year == yr) %>% dplyr::select_(val))
+
+}
+
+#Long in correct bins before plotting
+names(nn_bins) <- c('zone%','4nn','8nn','16nn','20nn','24nn')
+
+#Need labels
+nn_bins$label <- all3_df$label[1:822]
+
+nn_bins_long <- gather(nn_bins,source,percent,1:6)
+
+output <- ggplot(nn_bins_long, aes(x = source, y = percent, group = label, colour = label)) +
+  geom_line() +
+  guides(colour = F)
+
+output
+
+#And normalised to the zone%
+#(Leaving zone% in for reference)
+nn_bins_norm <- cbind(nn_bins[,c(1,7)],apply(nn_bins[,c(1:6)],c(2),function(x) nn_bins[,1]/x))
+
+nn_bins_long_norm <- gather(nn_bins_norm[,c(2:8)],source,percent,2:7)
+
+output <- ggplot(nn_bins_long_norm, aes(x = source, y = percent, group = label, colour = label)) +
+  geom_line() +
+  guides(colour = F)
+
+output
+
+
+
+
 
 
 

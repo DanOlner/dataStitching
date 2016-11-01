@@ -24,9 +24,9 @@ its_smallZoneIDColumn <- 1
 its_largeZoneIDColumn <- 2
 dta_zoneIDcolumn <- 1
 lrgID <- 1#cos it won't always match lrg name in intersect cos of clashes e.g. "label_2"
-datacols <- c(2:41)#from dta
+datacols <- c(2:40)#from dta
 
-result <- moveData(its,cob01,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols)
+result <- moveData(its01,cob01,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols)
 
 #save result!
 # writeOGR(result, "StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/CountryOfBirth",
@@ -51,7 +51,7 @@ its_smallZoneIDColumn <- 14
 its_largeZoneIDColumn <- 21
 dta_zoneIDcolumn <- 1
 lrgID <- 1#cos it won't always match lrg name in intersect cos of clashes e.g. "label_2"
-datacols <- c(2:41)#from dta
+datacols <- c(2:40)#from dta
 
 result <- moveData(its,cob11,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols)
 
@@ -128,6 +128,60 @@ result@data$percentEmployed <- (1 - (result@data$Unempl/result@data$EA)) * 100
 
 #Better column abbreviation
 writeSpatialShape(result,"StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/Employment/2011_econActive_91LBS_noZeroPCS.shp")
+
+
+#~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~
+#2001 dwellings----
+dwellings01 <- read.csv("2001/Scotland/Scotland_2001_dwellings.csv")
+
+names(dwellings01) <- c("ZoneCode","totalDwellings")
+
+#Get the intersect geog:
+its01 <- readOGR(dsn="Intersects/scots_3censusLBS_91PCSzeroCountIsTargetGeog", 
+                 layer="2001OAsTo91PCSzerocount")
+
+its_smallZoneIDColumn <- 1
+its_largeZoneIDColumn <- 2
+dta_zoneIDcolumn <- 1
+lrgID <- 1#cos it won't always match lrg name in intersect cos of clashes e.g. "label_2"
+datacols <- c(2)#from dta
+
+result <- moveData(its01,dwellings01,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols)
+
+#debugonce(moveData(its,hse71,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols))
+
+#save result!
+writeSpatialShape(result, 
+                  "StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/Dwellings/2001_dwellings_91LBS_noZeroPCS.shp")
+
+#~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~
+#2011 dwellings----
+dwellings11 <- read.csv("2011/Scotland/OutputAreaStd_ALL/KS401SC_tidy_justAllDwellings.csv")
+
+names(dwellings11) <- c("ZoneCode","totalDwellings")
+
+#Get the intersect geog:
+its11 <- readOGR(dsn="Intersects/scots_3censusLBS_91PCSzeroCountIsTargetGeog", 
+                 layer="2011OAsTo91PCSzerocount")
+
+#Same length as dwellings11 data zones (tho moveData checks this too I just realised)
+unique(its11@data[,14]) %>% length()
+
+its_smallZoneIDColumn <- 14
+its_largeZoneIDColumn <- 21
+dta_zoneIDcolumn <- 1
+lrgID <- 1#cos it won't always match lrg name in intersect cos of clashes e.g. "label_2"
+datacols <- c(2)#from dta
+
+result <- moveData(its11,dwellings11,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols)
+
+#debugonce(moveData(its,hse71,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols))
+
+#save result!
+writeSpatialShape(result, 
+                  "StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/Dwellings/2011_dwellings_91LBS_noZeroPCS.shp")
 
 
 #**------------ 

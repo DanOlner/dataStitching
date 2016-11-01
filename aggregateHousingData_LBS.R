@@ -8,7 +8,8 @@ lapply(geolibs, require, character.only = TRUE)
 # hse <- readRDS("C:/Data/Housing/JessieExtDrive/Misc_RoS_R_Saves/TIDIER_oldnew_addressBaseGeocodeMerge3.rds")
 #hse <- read.csv("C:/Data/Housing/JessieExtDrive/Misc_RoS_R_Saves/repeatSales_22_5_16.csv")
 #saveRDS(hse,"C:/Data/Housing/JessieExtDrive/Misc_RoS_R_Saves/repeatSales_22_5_16.rds")
-hse <- readRDS("C:/Data/Housing/JessieExtDrive/Misc_RoS_R_Saves/repeatSales_22_5_16.rds")
+#hse <- readRDS("C:/Data/Housing/JessieExtDrive/Misc_RoS_R_Saves/repeatSales_22_5_16.rds")
+hse <- readRDS("C:/Data/Housing/JessieExtDrive/Misc_RoS_R_Saves/SingleSalesPlusRepeatSales_filtered_July16.rds")
 
 #Keep only geocoded ones
 hse <- hse %>% filter(!is.na(eastingsFinal))
@@ -22,6 +23,8 @@ izs <- readOGR(dsn="C:/Data/MapPolygons/Scotland/1991/pseudoPCS_aggregated4Corre
 
 #or use one I already have
 izs <- lrg
+
+hse <- data.frame(hse)
 
 #Spatialise housing points
 coordinates(hse) <- ~ eastingsFinal + northingsFinal
@@ -74,6 +77,9 @@ nrow(hse[is.na(hse$label),])
 #Just changed to no zone above
 hse <- hse[hse@data$label!='no zone',]
 
+#Or haven't if I just skipped all those checks
+hse <- hse[!is.na(hse@data$label),]
+
 #save that!
 saveRDS(hse,"C:/Data/Housing/JessieExtDrive/Misc_RoS_R_Saves/oldnewcombined_spatialPointsDF_1991_PCSadded.rds")
 hse <- readRDS("C:/Data/Housing/JessieExtDrive/Misc_RoS_R_Saves/oldnewcombined_spatialPointsDF_1991_PCSadded.rds")
@@ -108,14 +114,24 @@ hse_df$date <- as.Date(hse_df$date)
 #                   & hse_df$date < (as.Date('30-09-2011', format = '%d-%m-%Y'))] <- "2011"
 
 #Larger range to get higher numbers per zone
+# hse_df$censusYear[hse_df$date > (as.Date('01-01-1990', format = '%d-%m-%Y'))
+#                   & hse_df$date < (as.Date('31-03-1992', format = '%d-%m-%Y'))] <- "1991"
+# 
+# hse_df$censusYear[hse_df$date > (as.Date('01-04-2000', format = '%d-%m-%Y'))
+#                   & hse_df$date < (as.Date('31-03-2002', format = '%d-%m-%Y'))] <- "2001"
+# 
+# hse_df$censusYear[hse_df$date > (as.Date('01-04-2010', format = '%d-%m-%Y'))
+#                   & hse_df$date < (as.Date('31-03-2012', format = '%d-%m-%Y'))] <- "2011"
+
+#Changing to larger range - slight skew for earlier prices - to get more data
 hse_df$censusYear[hse_df$date > (as.Date('01-01-1990', format = '%d-%m-%Y'))
-                  & hse_df$date < (as.Date('31-03-1992', format = '%d-%m-%Y'))] <- "1991"
+                  & hse_df$date < (as.Date('31-03-1994', format = '%d-%m-%Y'))] <- "1991"
 
-hse_df$censusYear[hse_df$date > (as.Date('01-04-2000', format = '%d-%m-%Y'))
-                  & hse_df$date < (as.Date('31-03-2002', format = '%d-%m-%Y'))] <- "2001"
+hse_df$censusYear[hse_df$date > (as.Date('01-04-1999', format = '%d-%m-%Y'))
+                  & hse_df$date < (as.Date('31-03-2003', format = '%d-%m-%Y'))] <- "2001"
 
-hse_df$censusYear[hse_df$date > (as.Date('01-04-2010', format = '%d-%m-%Y'))
-                  & hse_df$date < (as.Date('31-03-2012', format = '%d-%m-%Y'))] <- "2011"
+hse_df$censusYear[hse_df$date > (as.Date('01-04-2009', format = '%d-%m-%Y'))
+                  & hse_df$date < (as.Date('31-03-2013', format = '%d-%m-%Y'))] <- "2011"
 
 table(hse_df$censusYear, useNA = 'always')
 #1991    2001    2011    <NA> 
@@ -133,6 +149,7 @@ cnt %>% group_by(Var1) %>% summarise(min = min(Freq))
 cnt %>% group_by(Var1) %>% summarise(count = n())
 
 cnt %>% filter(Var1 == '1991', Freq == 0)
+cnt %>% filter(Freq == 0)
 
 #1991 is missing:
 # Var1   Var2 Freq
@@ -190,8 +207,38 @@ table(uniqueZonesCensus$censusYear)
 #write.csv(hse_df[hse_df$date < as.Date('01-01-1993',format='%d-%m-%Y'),],"temp/housesBefore93.csv")
 
 #Anyway: save housing-mapped-to-IZs result!
-write.csv(hse_c,"Housing/1991to2001_twoYearBandMeanPrices_1991_PCSnoZeroes.csv", row.names = F)
-saveRDS(hse_c,"Housing/1991to2001_twoYearBandMeanPrices_1991_PCSnoZeroes.rds")
+
+#Or don't. Those aren't yet actually zone / year averages. What exactly was I thinking there?
+hse_c_avs <- hse_c %>% group_by(censusYear,label) %>% 
+  summarise(meanPrice = mean(priceFinal), salesCount = n()) %>% 
+  data.frame
+
+summary(hse_c_avs$meanPrice)
+
+#Check missing values for zones
+chk4missinz  <- hse_c_avs %>% group_by(censusYear) %>% 
+  summarise(countZones = n())
+
+#Only one missing zone this time. 
+#Update: wider range above, so now no missing. But what numbers of sales?
+#One zone with only one sale. Quite a few with less than ten.
+#Guess we'll have to have a cut-off somewhere.
+
+#Some of those zones are probably gonna be averages from very small
+#numbers of properties. I should probably look at that.
+#So count of properties per zone per decade and boxplot
+countOfProps <-  hse_c %>% 
+  group_by(censusYear,label) %>% 
+  summarise(propertyCount = n())
+
+output <- ggplot(countOfProps, aes(x = factor(censusYear), y = propertyCount)) + 
+  geom_boxplot() +
+  scale_y_log10()
+
+output
+
+write.csv(hse_c_avs,"Housing/1991to2011_twoYearBandMeanPrices_1991_PCSnoZeroes_Nov16.csv", row.names = F)
+saveRDS(hse_c_avs,"Housing/1991to2011_twoYearBandMeanPrices_1991_PCSnoZeroes_Nov16.rds")
 
 
 

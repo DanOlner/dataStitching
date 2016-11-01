@@ -5,7 +5,7 @@ source("Function_DataFromSmalltoLargeGeog.R")
 lrg <- readOGR(dsn="C:/Data/MapPolygons/Scotland/1991/Scotland_postcodesectors_1991", 
                layer="scotland_pcs_1991_uniqueIDsperRow_LochsRemoved")
 
-#~~~~~~~
+#~~~~~~~~
 #1971----
 
 its <- readOGR(dsn="Intersects", 

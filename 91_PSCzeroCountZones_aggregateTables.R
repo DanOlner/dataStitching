@@ -205,7 +205,9 @@ writeSpatialShape(geogz,
 dwellings91pcs2 <- read.csv("1991/Scotland/1991_LBS_totalDwellingsOccupancy/1991_LBS_totalDwellingsOccupancy.csv")
 # 
 # #Hmm. I think zero columns may be different for household counts.
-dwellings91pcs2$totalDwellings <- apply(dwellings91pcs2[,c(3:18)],1,sum)
+#dwellings91pcs2$totalDwellings <- apply(dwellings91pcs2[,c(3:18)],1,sum)
+#Think it was only meant to be that first data column...
+dwellings91pcs2$totalDwellings <- dwellings91pcs2[,3]
 # 
 # #How many zeroes?
 table(0 + (dwellings91pcs2$totalDwellings == 0))
@@ -227,13 +229,14 @@ for(i in 1:length(zonez)) {
 
 #aggregate by zone for all columns
 #http://stackoverflow.com/questions/21295936/can-dplyr-summarise-over-several-variables-without-listing-each-one
-agg3 <- dwellings91pcs2[,3:20] %>% group_by(aggID) %>% 
+#I just  edited this to a shorter col list just for totalDwellings. Should have copied.
+#Oh well. It's on github.
+agg3 <- dwellings91pcs2[,c('totalDwellings','aggID')] %>% group_by(aggID) %>% 
   summarise_each(funs(sum))
-
 
 names(agg3)[names(agg3)=="aggID"] <- "label"
 
-agg3 <- agg3[,c(1,18)]
+#agg3 <- agg3[,c(1,18)]
 
 #Attach to geography and save
 geogz <- merge(pcs91shp,agg3,by = "label")
@@ -265,9 +268,8 @@ for(i in 1:length(zonez)) {
 
 #aggregate by zone for all columns
 #http://stackoverflow.com/questions/21295936/can-dplyr-summarise-over-several-variables-without-listing-each-one
-agg2 <- CoB91[,3:43] %>% group_by(aggID) %>% 
+agg2 <- CoB91[,3:42] %>% group_by(aggID) %>% 
   summarise_each(funs(sum))
-
 
 names(agg2)[names(agg2)=="aggID"] <- "label"
 
@@ -276,10 +278,11 @@ geogz <- merge(pcs91shp,agg2,by = "label")
 geogzdf <- data.frame(geogz)
 
 #save
-writeOGR(geogz, "StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/CountryOfBirth",
-         "1991_CountryOfBirthRecode_91LBS_noZeroPCS_straightMatch", driver="ESRI Shapefile", overwrite_layer = T)
+# writeOGR(geogz, "StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/CountryOfBirth",
+#          "1991_CountryOfBirthRecode_91LBS_noZeroPCS_straightMatch", driver="ESRI Shapefile", overwrite_layer = T)
 
-
+writeSpatialShape(geogz,
+  "StitchOutputs/Scotland/LBS_postcodeSector_3Census_raw/CountryOfBirth/1991_CountryOfBirthRecode_91LBS_noZeroPCS_straightMatch.shp")
 
 
 
