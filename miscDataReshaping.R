@@ -71,6 +71,8 @@ coords <- coordinates(iz)
 contig_nk <- knn2nb(knearneigh(coords,k=24), row.names = iz@data$label)
 
 
+contig_nk_df <- contig_nk %>% data.frame()
+
 #plot(iz, col='grey')
 #xy=locator(2,"p") 
 # plot(scotmap, xlim=xy$x,ylim=xy$y)
@@ -193,16 +195,109 @@ write.csv(CoB_combo,'file:///C:/Data/Census/StitchOutputs/Scotland/LBS_3censusCo
 write.csv(dwellings_combo,'file:///C:/Data/Census/StitchOutputs/Scotland/LBS_3censusCombinedData/dwellings.csv', row.names = F)
 write.csv(EA_combo,'file:///C:/Data/Census/StitchOutputs/Scotland/LBS_3censusCombinedData/econActive.csv', row.names = F)
 
+#~~~~~~~~~~~~~~~~
+#Check dwelling zone change between censuses----
+dwellingDiff <- data.frame(
+  diff1 = dwellings_combo$totalDwell[dwellings_combo$censusYear==2001] - 
+    dwellings_combo$totalDwell[dwellings_combo$censusYear==1991],
+  diff2 = dwellings_combo$totalDwell[dwellings_combo$censusYear==2011] - 
+    dwellings_combo$totalDwell[dwellings_combo$censusYear==2001]
+  )
+
+dwellingDiff2 <- dwellingDiff %>% gather(decade,diff)
+
+ggplot(dwellingDiff2,aes(x=decade,y=diff)) +
+  geom_boxplot()
+
+#How many below zero?
+table(dwellingDiff$diff1 < 0)
+table(dwellingDiff$diff2 < 0)
+
+#Do the zone names actually match?
+#Yes
+namez <- data.frame(
+  ninetyOne = dwellings_combo$label[dwellings_combo$censusYear==1991],
+  twoThousandOne = dwellings_combo$label[dwellings_combo$censusYear==2001],
+  twoThousandEleven = dwellings_combo$label[dwellings_combo$censusYear==2011]
+)
 
 
+dwellingLookz <- data.frame(
+  ninetyOne = dwellings_combo$totalDwell[dwellings_combo$censusYear==1991],
+  twoThousandOne = dwellings_combo$totalDwell[dwellings_combo$censusYear==2001],
+  twoThousandEleven = dwellings_combo$totalDwell[dwellings_combo$censusYear==2011]
+)
 
+apply(dwellingLookz,2,sum) %>% diff
 
+#add zone codes to dwelling diffs for mapping
+dwellingDiff$label <- namez$ninetyOne
 
+#attach to spatial and save
+#wellingDiffsp <- pcs
+#Oops, wrong one!
+pcs@data <- merge(pcs@data,dwellingDiff,by = 'label')
 
+writeSpatialShape(pcs,'QGIS/temp/checkDwellinz.shp')
 
+#~~~~~~~~~~~~~~~~
+#Check total pop zone change (via tot CoB) between censuses----
 
+#Using CoB_combo from above
+#Drop channel islands for now, I accidentally double counted
+CoB_combo2 <- CoB_combo %>% dplyr::select(-Channel_Is)
 
+#Sum remaining CoBs as total zone pop
+CoB_combo2 <- CoB_combo2 %>% mutate(totpop = rowSums(.[4:41]))
 
+#Just keep totpop
+CoB_combo2 <- CoB_combo2 %>% dplyr::select(1:2,42:43)
+
+CoB_diff <- data.frame(
+  diff1 = CoB_combo2$totpop[CoB_combo2$censusYear==2001] - 
+    CoB_combo2$totpop[CoB_combo2$censusYear==1991],
+  diff2 = CoB_combo2$totpop[CoB_combo2$censusYear==2011] - 
+    CoB_combo2$totpop[CoB_combo2$censusYear==2001]
+)
+
+CoB_diff2 <- CoB_diff %>% gather(decade,diff)
+
+ggplot(CoB_diff2,aes(x=decade,y=diff)) +
+  geom_boxplot()
+
+#OK, so a similar pattern to dwellings - which would make sense either due to problems
+#with zone agg or because pop actually did drop.
+
+#Assuming zone order stayed the same... Yup
+table(CoB_combo$label == dwellings_combo$label)
+
+#So do those zones correlate?
+plot(dwellingDiff$diff1,CoB_diff$diff1)
+plot(dwellingDiff$diff2,CoB_diff$diff2)
+
+#My spidey sense is those are (mostly) correct. The way they change between censuses...
+#But that could just be census change biasing the underlying mistake with something that
+#makes it look plausible.
+
+#~~~~~~~~~~~~~~~~
+#Check econ active zone change between censuses----
+
+#In theory, if there's the same type of change, that suggests zone summing is causing it
+EA_perc_diff <- data.frame(
+  diff1 = EA_combo$percentEmp[EA_combo$censusYear==2001] - 
+    EA_combo$percentEmp[EA_combo$censusYear==1991],
+  diff2 = EA_combo$percentEmp[EA_combo$censusYear==2011] - 
+    EA_combo$percentEmp[EA_combo$censusYear==2001]
+)
+
+EA_diff2 <- EA_perc_diff %>% gather(decade,diff)
+
+ggplot(EA_diff2,aes(x=decade,y=diff)) +
+  geom_boxplot()
+
+#Ah ha! Phew. Looks promising.
+plot(dwellingDiff$diff1,EA_perc_diff$diff1)
+plot(dwellingDiff$diff2,EA_perc_diff$diff2)
 
 
 

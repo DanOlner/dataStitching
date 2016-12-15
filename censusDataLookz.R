@@ -1,6 +1,6 @@
 #Look at the five and three census data, see what we have.
 geolibs <- c("ggplot2","RColorBrewer","spdep","ggmap","rgdal","rgeos","maptools","dplyr","tidyr","tmap","raster", "dplyr", "tidyr","assertthat",
-             "data.table","pryr","geoR")
+             "data.table","pryr","geoR","plyr","data.table")
 lapply(geolibs, require, character.only = TRUE)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -181,11 +181,64 @@ for(x in 1:5){
 allFive_EA <- do.call(rbind,c(allFiveList_EA,makeUniqueIDs = T))
 
 #Tick!
-test <- data.frame((allFive_EA))
+allFive_EA_df <- data.frame((allFive_EA))
 
+#~~~~~~~~~~~~~~
+#Check between-census EA correlations
+percentEmpWide <- do.call(cbind,
+                  list(allFive_EA_df$prcntEm[allFive_EA_df$year==1971],
+                       allFive_EA_df$prcntEm[allFive_EA_df$year==1981],
+                       allFive_EA_df$prcntEm[allFive_EA_df$year==1991],
+                       allFive_EA_df$prcntEm[allFive_EA_df$year==2001],
+                       allFive_EA_df$prcntEm[allFive_EA_df$year==2011]
+                       )
+                  ) %>% data.frame()
 
+#invert: wanna see % UNemployed
+percentEmpWide <- 100 - percentEmpWide 
 
+names(percentEmpWide) <- c('1971',
+                           '1981',
+                           '1991',
+                           '2001',
+                           '2011')
 
+pairs((percentEmpWide))
+
+#Reckon I just wanna see particular ones
+plot(percentEmpWide$`1971`,percentEmpWide$`1981`)
+plot(percentEmpWide$`1981`,percentEmpWide$`1991`)
+plot(percentEmpWide$`1991`,percentEmpWide$`2001`)
+plot(percentEmpWide$`2001`,percentEmpWide$`2011`)
+
+#Back to original: think I can do lag between years with one thingyo
+#Need the lag to be by place, silly person. Year should be in correct order
+#Plus drop 71, no lag possible
+lagz <- allFive_EA_df %>% 
+  arrange(interzn, year) %>% 
+  group_by(interzn) %>% 
+  mutate(change = prcntEm - lag(prcntEm)) %>% 
+  filter(year != 1971)
+
+ggplot() +
+  geom_boxplot(data = lagz, aes(x = factor(year), y = change))
+
+#save to look in QGIS
+#Different column for each year's change
+lagz4gis <- lagz %>% dplyr::select(interzn,year,change) %>% 
+  spread(year, change)
+
+#check zones are in same order. Ah, newp! Yeah, I arranged remember? Will need to merge in.
+fiveCensus11_EA@data$interzn == lagz4gis$interzn
+
+useThis <- fiveCensus11_EA
+
+useThis@data <- merge(useThis@data,lagz4gis,by = 'interzn')
+  
+useThisdf <- data.frame(useThis)
+fiveCensus11_EA_df <- data.frame(fiveCensus11_EA)
+
+writeSpatialShape(useThis, 'QGIS/temp/employment5censusChange.shp')
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Three census CoB--------------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -202,12 +255,16 @@ names(threeCensus91)
 names(threeCensus01)
 names(threeCensus11)
 
-threeCensus91 <- threeCensus91[,c(1:11,13:42)]
-threeCensus01 <- threeCensus01[,c(2:12,14:43)]
-threeCensus11 <- threeCensus11[,c(2:12,14:43)]
+#Update: I appear to have fixed it. Did I? Yup!
+table(names(threeCensus91)==names(threeCensus01))
+table(names(threeCensus11)==names(threeCensus01))
 
+#So no longer need all this
+# threeCensus91 <- threeCensus91[,c(1:11,13:42)]
+# threeCensus01 <- threeCensus01[,c(2:12,14:43)]
+# threeCensus11 <- threeCensus11[,c(2:12,14:43)]
 #We know they were in the same order
-names(threeCensus91) <- names(threeCensus01)
+#names(threeCensus91) <- names(threeCensus01)
 
 all3List <- c(threeCensus91, threeCensus01, threeCensus11)
 
@@ -226,9 +283,86 @@ all3 <- do.call(rbind,c(all3List,makeUniqueIDs = T))
 #Tick!
 test <- data.frame((all3))
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Save! I keep on having to do the above...
+saveRDS(all3,'R_data/all3.rds')
+
+all3_df <- data.frame(all3)
+
+saveRDS(all3_df,'R_data/all3_df.rds')
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#3 Census CoB: across zone shares----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#Question: doesn't using across-zone shares make it autocorrelate to zone pop?
+#Avoiding prop.table, use mutate_each to get per column proportions for each group.
+
+#Add in total pop column
+all3_df$totalPop <- apply(all3_df[,c(4:42)],1,sum)
+
+#It'll annoy me the year col being in the wrong position
+all3_df <- all3_df[,c(1:42,44,43)]
+
+all3_df_shares <- all3_df %>% 
+  dplyr::select(4:44) %>% 
+  group_by(year) %>% 
+  #mutate(prop = prop.table(.,margin = 2))#NONONO!
+  #mutate_each(  funs(  ((.)/sum(.))*100  ), var = c(4:43) )#YESYESYES
+  mutate_each(  funs(  ((.)/sum(.))*100  ) )#YESYESYES
+
+
+#pre-selecting variables (for some reason) replaces originals
+#with the proportions and keeps the correct column names
+#So just add back in the zone references
+all3_df_shares <- cbind(all3_df[,c(1:3)],all3_df_shares)
+
+#Did that work? Yup!
+apply(all3_df_shares[all3_df$year==2011,c(4:43)],2,sum)
+
+#~~~~~~~~~~~~~~~~~~~~
+#Now: I think all of them are just going to correlate with total pop per zone, aren't they?
+#So pick some examples
+corz <- all3_df_shares[all3_df_shares$year %in% c(1991,2011),c("Irish_Repu","totalPop","year")]
+corz <- all3_df_shares[all3_df_shares$year %in% c(1991,2011),c("Pakistan","totalPop","year")]
+corz <- all3_df_shares[all3_df_shares$year %in% c(1991,2011),c("England","totalPop","year")]
+
+#corzwide <- dcast(corz,Irish_Repu+totalPop~year)
+
+#And what if I just keep the top number? What's the correlation to pop then?
+#Say, top 50
+corztop <- corz %>% 
+  group_by(year) %>% 
+  top_n(n = 100,wt = Irish_Repu)
+
+corztop <- corz
+
+#**** **
+#Annoying failure to use any widening function
+# corzwide <- do.call(cbind,list(corz[corz$year==1991,c(1:2)],
+#                                corz[corz$year==2011,c(1:2)]))
+corzwide <- do.call(cbind,list(corztop[corztop$year==1991,c(1:2)],
+                               corztop[corztop$year==2011,c(1:2)]))
+
+#names(corzwide) <- c('Irish_Repu91','totalPop91','Irish_Repu11','totalPop11')
+names(corzwide) <- c('cob91','totalPop91','cob11','totalPop11')
+
+pairs((corzwide))
+pairs(log(corzwide))
+
+tst <- lm(cob11~totalPop91,corzwide)
+summary(tst)
+
+tst2 <- lm(cob11~cob91,corzwide)
+summary(tst2)
+
+tst3 <- lm(cob11~cob91+totalPop91,corzwide)
+summary(tst3)
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Look at total CoB cats for each decade, see how they change.-----
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #Sum per decade
 all3_df <- data.frame(all3)

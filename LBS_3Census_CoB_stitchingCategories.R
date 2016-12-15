@@ -84,7 +84,8 @@ threeCensusCombo <- list(
   list(ninety1_LBS,twoThousand1,twoThEleven),#all data to sum columns on
   list('1,2','1','1'),#columns to keep from those
   list('Channel Islands Isle of Man','8:9','9','7'),
-  list('Rest of UK','6:9','4,6,9','3,6:7'),#Leaving out 91/01 "ireland part not specified"
+  list('Rest of UK','6:9','4,6,9','3,6:7'),#Oops, Isle of Man is in here too.
+  #list('Rest of UK','6:9','4,6,9','3,6:7'),#Leaving out 91/01 "ireland part not specified"
   list('Irish Republic','10','7','8'),
   list('China','87','46','36'),
   list('South Africa','77','39','30'),
