@@ -1,7 +1,8 @@
 #Function: takes in a QGIS/python generated intersection shapefile
 #A data CSV matching the smaller geography
 #Re-assigns that data by area
-geolibs <- c("dplyr", "tidyr","assertthat","ggmap","rgdal","rgeos","maptools","dplyr","tidyr","tmap","raster")
+# geolibs <- c("dplyr", "tidyr","assertthat","ggmap","rgdal","rgeos","maptools","dplyr","tidyr","tmap","raster")
+geolibs <- c("dplyr", "tidyr","assertthat","rgdal","rgeos","maptools","tidyr","raster")
 lapply(geolibs, require, character.only = TRUE)
 
 #its: intersect SpatialPolygonsDataframe
@@ -32,7 +33,7 @@ moveData <- function(its,dta,lrg,gIDs,gIDb,ID,lrgID,datacols){
   print(
     paste0("Number of small-zone IDs in the data: ",
            length(unique(dta[,ID]))
-    ),quote = F
+    ),quote = F 
   )
   
   #Area of small-zone chunks - can find small zone area by summing by group

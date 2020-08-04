@@ -1,0 +1,64 @@
+---
+title: "CulturalDistanceRegressions"
+author: "Dan Olner"
+date: "5 April 2018"
+output: word_document
+---
+
+
+```{r echo = F, warning = F, message = F}
+#Preload libraries and data for myself
+library(png)
+library(grid)
+library(knitr)
+library(htmlTable)
+library(dplyr)
+library(ggplot2)
+library(data.table)
+library(tidyr)
+
+sheet2 <- readRDS('R_data/culturaldistsheet2_w_acd_toUK_n_employment.rds')
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Cultural distance regressions
+
+## The different cultural distance measures
+
+
+```{r echo=F}
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

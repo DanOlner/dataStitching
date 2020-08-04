@@ -11,6 +11,10 @@
 /shp_local/*
 /Housing/*
 /R_outputs/*
+/regressionOutputs/*
+/otherCensusData/*
+/flowData/*
+/rothShefOutputs/*
 /R_data/*
 /Definitions/*
 /.Rproj.user/*

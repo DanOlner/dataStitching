@@ -1,7 +1,8 @@
 source("Function_Shapefile_uniqueIDs_to_singleRowFeatures.R")
 source("Function_DataFromSmalltoLargeGeog.R")
 
-#just checking on zone area
+
+#Checking on zone area----
 pcs <- readOGR(dsn="C:/Data/MapPolygons/Scotland/1991/Scotland_postcodesectors_1991", 
                      layer="scotland_pcs_1991")
 
@@ -11,9 +12,10 @@ oas <- readOGR(dsn="C:/Data/MapPolygons/Scotland/1991/Scotland_outputareas_1991"
 izs <- readOGR(dsn="C:/Data/MapPolygons/Scotland/2011/Scotland_IntermediateGeography_2011", 
                layer="scotland_ig_2011")
 
+wards <- readOGR(dsn="C:/Data/MapPolygons/EnglandWalesMerged/EnglandWales2011WardsClipped",
+                 layer="englandWales2011WardsClipped")
 
 #find area
-
 pcs@data$area <- gArea(pcs, byid=T)
 oas@data$area <- gArea(oas, byid=T)
 izs@data$area <- gArea(izs, byid=T)

@@ -1,0 +1,183 @@
+---
+title: "5 Census Regressions"
+author: "Dan Olner"
+date: "5 July 2017"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+#knitr::opts_chunk$set(echo = TRUE, comment = NA)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo = F, warning = F, message = F}
+#Preload libraries for myself
+library(readr)
+#for resizing images
+#http://stackoverflow.com/questions/15625990/how-to-set-size-for-local-image-using-knitr-for-markdown
+library(png)
+library(grid)
+library(dplyr)
+library(ggplot2)
+library(RColorBrewer)
+library(scales)
+library(tidyr)
+
+options(scipen=2)
+
+#source("Function_CoBRegressionFunctions.R")
+
+sheet5 <- readRDS('R_data/sheet5.rds')
+
+#Only four cobs
+sheet5sub <- readRDS('R_data/sheet5sub.rds')
+
+#summary(lm(data = inputdata, formula = lmfunction)),
+
+#lapply(split(inputdata,inputdata[,splitByFactor]), function(x) summary(lm(data=x, formula = lmfunction)))
+
+#Separate city sheets
+citiesList <- c('Glasgow','Edinburgh','Aberdeen','Dundee')
+
+citySheets5 <- readRDS('R_data/citySheets5.rds')
+citySheets5sub <- readRDS('R_data/citySheets5sub.rds')
+```
+\clearpage
+
+#2011 ~ 1971, largest set of 5 census CoBs
+
+* Rich CoBs: Irish Republic, Old Commonwealth, Europe
+* Poor: Africa New Commonweath, India, Pakistan, South-East Asia New Commonwealth, Caribbean , Other New Commonwealth, Rest of World
+
+##All zones, rich vs poor
+
+Formula: *xij2011 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre71*
+
+```{r echo = F, comment=NA}
+lapply(split(sheet5,sheet5[,'rich']), function(x) summary(lm(data=x, formula = xij2011 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre1971)))
+```
+
+##Urban zones, rich vs poor
+
+```{r echo = F, comment=NA}
+lapply(split(sheet5[sheet5$urbanFiftyPercentPlus==1,],sheet5[sheet5$urbanFiftyPercentPlus==1,'rich']), function(x) summary(lm(data=x, formula = xij2011 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre71)))
+```
+
+*****
+
+#Four cities (urban zones): rich vs poor, 2011 ~ 1971
+
+```{r echo = F, comment=NA}
+
+for(i in 1:4){
+  
+print(citiesList[[i]])
+  
+print(  
+lapply(split(citySheets5[[i]],citySheets5[[i]][,'rich']), function(x) summary(lm(data=x, formula = xij2011 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre71)))
+)
+
+}
+```
+
+#Smaller list of CoBs for rich/poor: europe, old commonweath for rich and India, Pakistan for poor
+
+##All zones, rich vs poor (four CoBs)
+
+Formula: *xij2011 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre71*
+
+```{r echo = F, comment=NA}
+lapply(split(sheet5sub,sheet5sub[,'rich']), function(x) summary(lm(data=x, formula = xij2011 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre71)))
+```
+
+##Urban zones, rich vs poor (four CoBs)
+
+```{r echo = F, comment=NA}
+lapply(split(sheet5sub[sheet5sub$urbanFiftyPercentPlus==1,],sheet5sub[sheet5sub$urbanFiftyPercentPlus==1,'rich']), function(x) summary(lm(data=x, formula = xij2011 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre71)))
+```
+
+##All zones, rich vs poor (1991 ~ 1971) (four CoBs)
+
+Formula: *xij1991 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre71*
+
+```{r echo = F, comment=NA}
+lapply(split(sheet5sub,sheet5sub[,'rich']), function(x) summary(lm(data=x, formula = xij1991 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre71)))
+```
+
+##Urban zones, rich vs poor (1991 ~ 1971) (four CoBs)
+
+```{r echo = F, comment=NA}
+lapply(split(sheet5sub[sheet5sub$urbanFiftyPercentPlus==1,],sheet5sub[sheet5sub$urbanFiftyPercentPlus==1,'rich']), function(x) summary(lm(data=x, formula = xij1991 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre71)))
+```
+
+
+##Four cities (urban zones), rich vs poor (four CoBs)
+
+```{r echo = F, comment=NA}
+
+for(i in 1:4){
+  
+print(citiesList[[i]])
+  
+print(  
+lapply(split(citySheets5sub[[i]],citySheets5sub[[i]][,'rich']), function(x) summary(lm(data=x, formula = xij2011 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre71)))
+)
+
+}
+```
+
+#Different decade comparisons 1: 91 vs 71
+
+##All zones, rich vs poor: 1991 ~1971
+
+Formula: *xij1991 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre71*
+
+```{r echo = F, comment=NA}
+lapply(split(sheet5,sheet5[,'rich']), function(x) summary(lm(data=x, formula = xij1991 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre71)))
+```
+
+##Urban zones, rich vs poor: 1991 ~ 1971
+
+```{r echo = F, comment=NA}
+lapply(split(sheet5[sheet5$urbanFiftyPercentPlus==1,],sheet5[sheet5$urbanFiftyPercentPlus==1,'rich']), function(x) summary(lm(data=x, formula = xij1991 ~ xij1971 + w1971q + migshareMinusOwn1971 + ea1971 + popPerAcre71)))
+```
+
+#Different decade comparisons 2: 11 vs 91
+
+##All zones, rich vs poor (11 ~ 91) (four CoBs)
+
+Formula: *xij2011 ~ xij1991 + w1991q + migshareMinusOwn1991 + ea1991 + popPerAcre91*
+
+```{r echo = F, comment=NA}
+lapply(split(sheet5sub,sheet5sub[,'rich']), function(x) summary(lm(data=x, formula = xij2011 ~ xij1991 + w1991q + migshareMinusOwn1991 + ea1991 + popPerAcre91)))
+```
+
+##Urban zones, rich vs poor (11 ~ 91) (four CoBs)
+
+```{r echo = F, comment=NA}
+lapply(split(sheet5sub[sheet5sub$urbanFiftyPercentPlus==1,],sheet5sub[sheet5sub$urbanFiftyPercentPlus==1,'rich']), function(x) summary(lm(data=x, formula = xij2011 ~ xij1991 + w1991q + migshareMinusOwn1991 + ea1991 + popPerAcre91)))
+```
+
+##Cities, rich vs poor (11 ~ 91) (four CoBs)
+
+```{r echo = F, comment=NA}
+
+for(i in 1:4){
+  
+print(citiesList[[i]])
+  
+print(  
+lapply(split(citySheets5sub[[i]],citySheets5sub[[i]][,'rich']), function(x) summary(lm(data=x, formula = xij2011 ~ xij1991 + w1991q + migshareMinusOwn1991 + ea1991 + popPerAcre91)))
+)
+
+}
+```
+
+
+
+
+
+

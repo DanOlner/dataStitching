@@ -1,0 +1,88 @@
+---
+title: "5 Census Regressions: 2011 vs each decade, all and cities"
+author: "Dan Olner"
+date: "15 July 2017"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+#knitr::opts_chunk$set(echo = TRUE, comment = NA)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo = F, warning = F, message = F}
+#Preload libraries for myself
+library(readr)
+#for resizing images
+#http://stackoverflow.com/questions/15625990/how-to-set-size-for-local-image-using-knitr-for-markdown
+library(png)
+library(grid)
+library(dplyr)
+library(ggplot2)
+library(RColorBrewer)
+library(scales)
+library(tidyr)
+
+options(scipen=10)
+
+#source("Function_CoBRegressionFunctions.R")
+
+sheet5 <- readRDS('R_data/sheet5.rds')
+
+#Only four cobs
+#sheet5sub <- readRDS('R_data/sheet5sub.rds')
+
+#summary(lm(data = inputdata, formula = lmfunction)),
+
+#lapply(split(inputdata,inputdata[,splitByFactor]), function(x) summary(lm(data=x, formula = lmfunction)))
+
+#Separate city sheets
+citiesList <- c('Glasgow','Edinburgh','Aberdeen','Dundee')
+
+citySheets5 <- readRDS('R_data/citySheets5.rds')
+#citySheets5sub <- readRDS('R_data/citySheets5sub.rds')
+```
+\clearpage
+
+
+
+#2011 ~ 1971 to 2001: all CoBs, all zones
+
+Formula (d = 1971 to 2001): *xij2011 ~ xij-d + w-dq + migshareMinusOwn-d + ea-d + popPerAcre-d*
+
+```{r echo = F, comment=NA}
+
+decades = c('1971','1981','1991','2001')
+
+for(i in decades){
+  
+  print(paste0('DECADE 2011 ~ ',i))
+  
+  print(summary(lm(data=sheet5, formula = paste0('xij2011 ~ xij',i,' + w',i,'q + migshareMinusOwn',i,' + ea',i,' + popPerAcre',i))))
+  
+}
+
+```
+
+
+#Four cities (urban zones): 2011 ~ the other four decades
+
+```{r echo = F, comment=NA}
+
+for(j in 1:4){
+  
+  print(citiesList[[j]])
+  
+  for(i in decades){
+  
+    print(paste0('DECADE 2011 ~ ',i))
+    
+    print(summary(lm(data=citySheets5[[j]], formula = paste0('xij2011 ~ xij',i,' + w',i,'q + migshareMinusOwn',i,' + ea',i,' + popPerAcre',i))))
+  
+  }
+
+}
+```

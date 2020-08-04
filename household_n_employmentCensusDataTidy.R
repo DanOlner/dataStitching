@@ -19,7 +19,6 @@ hse91 <- read.csv("1991/Scotland/Scotland_1991_tenure_totalHouseholds/Scotland_1
 #2001: single column. 
 hse01 <- read.csv("2001/Scotland/Scotland_2001_amenities_countAllHouseholds.csv")
 
-
 #We also have a count of actual dwellings to compare to here
 #Could perhaps see if there's some spatial pattern to the difference?
 #ie. is it closer in cities?

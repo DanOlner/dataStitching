@@ -89,6 +89,43 @@ write.csv(
   "1991/Scotland/1991_Scotland_SAS_CoB_OutputAreas/1991_Scotland_SAS_CoB_OutputAreas__noMaleFemale_countyNamesAdded.csv",
   row.names = F)
 
+#~~~~~~~~
+#1991 SAS at PCS zone level----
+ninetyOneSAS_PCS <- read.csv(
+  "1991/Scotland/1991_Scotland_SAS_CoB_postcodeSectors/1991_Scotland_SAS_CoB_postcodeSectors.csv",
+  check.names = F)
+
+#Remove the extra zone ID column this has (compared to OA above)
+ninetyOneSAS_PCS <- ninetyOneSAS_PCS[,c(1,3:46)]
+
+#SAS table: male and female in odd/even column names
+#Sum male,female
+#Loses the column name, annoyingly.
+all91sas <- data.frame(ninetyOneSAS_PCS[,c('Zone ID')])
+
+#Take pairs of male/female columns, sum them into new
+for(n in seq(from = 2, to = 45, by = 2)){
+  
+  all91sas[,as.character(n)] <- ninetyOneSAS_PCS[,n] + ninetyOneSAS_PCS[,(n+1)]
+  
+}
+
+#Add names to columns (adding in total cols at start that the names file is missing)
+names(all91sas) <- c('Zone ID','ALL','UK',names[1:20,3])
+
+#'UK' column is not quite sum of the nations
+#But while it "Includes Channel Islands, Isle of Man and United Kingdom (part not stated)"
+#The differences are not consistent. So drop, same as other sum columns
+
+#remove sum columns we don't want before saving: 
+#All, new commonwealth
+all91sas <- all91sas[,!(names(all91sas) %in% c('ALL','UK','New Commonwealth'))]
+
+write.csv(
+  all91sas,
+  "1991/Scotland/1991_Scotland_SAS_CoB_postcodeSectors/1991_Scotland_SAS_CoB_postcodeSectors_noMaleFemale_countyNamesAdded.csv",
+  row.names = F)
+
 
 #~~~~~~~~
 #1991 LBS postcode sectors----
@@ -156,7 +193,7 @@ names(twoFaazandOne) <- c('Zone Code',names[1:82,5])
 #But it's not a sum, two separate vals.
 rmv <- c('Europe','United Kingdom',
          'Other Western Europe','EU Countries',
-         'Non EU Countries in Western Europe',
+         #'Non EU Countries in Western Europe',no, this is not a sum column!
          'Eastern Europe','Africa',
          'Central and Western Africa',
          'South and Eastern Africa',
@@ -164,7 +201,7 @@ rmv <- c('Europe','United Kingdom',
          'South Asia','North America',
          'Oceania')
          
-#Should drop down to 68 cols. Yup!
+#Should drop down to 68 (no, 69) cols. Yup!
 twoFaazandOne2 <- twoFaazandOne[,!(names(twoFaazandOne) %in% rmv)]
 
 #Save

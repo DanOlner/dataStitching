@@ -12,7 +12,6 @@ require(assertthat)
 #Spits out the recoded dataframes in a list
 recode <- function(listz) {
   
-  
   #Get number of dataframes to be coding to common names (to verify re-coding length values)
   df_num <- length(listz[[1]])
   
@@ -32,7 +31,7 @@ recode <- function(listz) {
     
     #columns to combine
     #select_ takes a string straight in...
-    newcol <- listz[[1]][[df_index]] %>% select_(paste0("c(",colString,")") ) 
+    newcol <- listz[[1]][[df_index]] %>% dplyr::select_(paste0("c(",colString,")") ) 
     #sum them...
     newcol <- data.frame(apply(newcol,1,sum))
     #return new column
@@ -74,7 +73,7 @@ recode <- function(listz) {
     
     #Combine with columns we want to keep
     #indicated in second list
-    final <- listz[[1]][[df_index]] %>% select_(paste0("c(",listz[[2]][df_index],")") ) 
+    final <- listz[[1]][[df_index]] %>% dplyr::select_(paste0("c(",listz[[2]][df_index],")") ) 
     
     dfs[[df_index]] <- cbind(final,newcols)
     

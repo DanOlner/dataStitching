@@ -3,9 +3,9 @@ geolibs <- c("ggplot2","RColorBrewer","spdep","ggmap","rgdal","rgeos","maptools"
              "data.table","pryr","geoR","plyr","data.table")
 lapply(geolibs, require, character.only = TRUE)
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Five census CoB----
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #Load all the CoB 5-census data
 fiveCensus71 <- readShapeSpatial("C:/Data/Census/StitchOutputs/Scotland/fiveCensus_to2011_IZs_raw/CountryOfBirth/1971_CoB_from_71EDs_to_2011_IntermediateGeog.shp")
@@ -2636,6 +2636,35 @@ output <- ggplot(nn_bins_long_norm, aes(x = source, y = percent, group = label, 
   guides(colour = F)
 
 output
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Look at eViewsReady estimation file----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+eViewsFile <- read_csv('R_data/estimation.csv')
+
+#Check some correlations - weights matrices looking plausible?
+plot(log(eViewsFile$xij1991),log(eViewsFile$w91q))
+plot(log(eViewsFile$w91nn8),log(eViewsFile$w91q))
+plot((eViewsFile$w91nn8),(eViewsFile$w91q))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#1991 shares cf 2011 change----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#From CoB combo file - get shares and raw numbers
+cob <- read_csv('StitchOutputs/Scotland/LBS_3censusCombinedData/countryOfBirth.csv')
+
+#Bits of code nabbed from eViewsReady.R
+cob$Population <- apply(cob[,c(4:42)],1,sum)
+
+cobshares <- cob %>% 
+  dplyr::select(4:44) %>% 
+  group_by(censusYear) %>% 
+  mutate_each(  funs(  ((.)/sum(.))*100  ) )
+
+
+
 
 
 
