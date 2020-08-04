@@ -10,7 +10,7 @@ These first two show **per-zone proportion** change in two age-bands: 30-34 year
 
 ## 65-69 year olds: per zone proportions 71-11
 
-<img src="london_age_30-34_150ms.gif" width="700" />
+<img src="acrosslondon_age_65-69_150ms.gif" width="700" />
 
 
 
