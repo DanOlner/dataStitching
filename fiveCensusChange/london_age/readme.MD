@@ -1,8 +1,10 @@
 # UK 5-Census (1971-2011) age bands at 1991 ward level: examples of change in London
 
+Code is [here](https://github.com/DanOlner/dataStitching/blob/master/newVarHarmonising2020.R), in the "AGE: London changes" section.
+
 ## Per zone proportion change
 
-These first two show **per-zone proportion** change in two age-bands: 30-34 year olds and 65-69 year olds. They show the opposite pattern: more older people on the outskirts, younger more centralised. (Note: this is only based on counts per zone, so can't say how those changes break down into migratory (both short-distance local migration, internal or international) / people in place ageing etc).
+These first two show **per-zone proportion** change in two age-bands: 30-34 year olds and 65-69 year olds. They show the opposite pattern: more older people on the outskirts, younger more centralised. Note: this is only based on counts per zone, so can't say how those changes break down into migratory (both short-distance local migration, internal or international) / people in place ageing etc.
 
 ## 30-34 year olds: per zone proportions 71-11
 
