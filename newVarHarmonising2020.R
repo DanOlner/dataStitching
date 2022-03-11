@@ -1,5 +1,6 @@
 library(tidyverse)
 library(sf)
+library(tmap)
 #library(rgdal)
 source("Function_DataFromSmalltoLargeGeog.R")
 
@@ -1669,10 +1670,570 @@ tm_shape(london_props %>% filter(year==2011)) +
 
 
 
+#~~~~~~~~~~~~~~~~~~~~~~~
+#TENURE: London changes----
+#~~~~~~~~~~~~~~~~~~~~~~~
+
+#GIF maps for tenure too.
+#Load 71-11 Tenure
+filez <- list.files(path = 'StitchOutputs/GreatBritain/LBS_postcodeSectorWard_5Census_csvs',pattern = 'tenure',full.names = T)
+
+years <- c(1971,1981,1991,2001,2011)
+tenure <- lapply(1:5,function(x) read_csv(filez[x]) %>% mutate(year = years[x]))
+tenure <- bind_rows(tenure)
+
+
+tenure_props <- tenure %>% 
+  mutate(
+    totalpop = rowSums(.[3:6])
+  ) %>% 
+  mutate_at(vars(`ownerocc`:`other`), funs( (./totalpop)*100 ))
+
+#Check proportions are correct...tick
+apply(tenure_props %>% dplyr::select(`ownerocc`:`other`),1,sum)
 
 
 
+GBgeog <- st_read('C:/Users/admin/Dropbox/SheffieldMethodsInstitute/CountryOfBirthOpenDataSets/data/gb_shapefile/gb_altered_wards_n_postcodesectors_w_lookup.shp')
+
+#London geog
+london <- GBgeog %>% filter(ttwa=='London')
+
+#Join tenure proportion data
+london <- left_join(london,tenure_props,by=c('zone'='label'))
+
+map <- tm_shape(london) +
+  tm_polygons(col = 'ownerocc', style = 'jenks', n = 12, palette = 'plasma') +
+  tm_facets(by = 'year', ncol = 1, nrow = 1) 
+
+
+tmap_animation(map, filename = 'R_outputs/CensusHarmonising/tenure_London/london_tenure_ownerocc.gif', width = 2000, height = 1000, delay = 150)
+
+
+
+
+
+#~~~~~~~~~~~~~~~
+#SOME CHECKS----
+#~~~~~~~~~~~~~~~
+
+#Ward vs PCS zone size----
+
+gb <- st_read('C:/Users/admin/Dropbox/SheffieldMethodsInstitute/CountryOfBirthOpenDataSets/data/gb_shapefile/gb_altered_wards_n_postcodesectors_w_lookup.shp')
     
+#Check on different area sizes, E/W v Scotland
+gb$country2 <- "EngladWales"
+gb$country2[gb$country=="Scotland"] <- "Scotland"
+
+gb$area <- st_area(gb$geometry)
+gb$area <- gb$area/1000000
+
+ggplot(gb,aes(x = as.numeric(area),colour= country2)) +
+  geom_boxplot()
+
+library(tmap)
+
+qtm(gb %>% filter(ttwa=="Glasgow"))
+qtm(gb %>% filter(ttwa=="Manchester"))
+
+ggplot(gb %>% filter(ttwa %in% c("Glasgow","Manchester")),aes(y = as.numeric(area),colour= ttwa)) +
+  geom_boxplot() +
+  ylab("log10 km^2") +
+  xlab("") +
+  scale_y_log10()
+
+
+
+#1991 10% sample vs 100%----
+
+comp1991 <- read_csv('1991/England/1991_England_10vs100percentsample_comparison.csv')
+names(comp1991) <- gsub(x = names(comp1991),pattern = 'l71000',replacement = '')
+
+#1 is 100% counts total residents
+#7 is 10% sample
+comp1991 <- comp1991 %>% mutate(prop = (`7`/`1`)*100)
+
+View(sample_n(comp1991,200))
+
+#Quite a spread...
+plot(density(comp1991$prop,na.rm=T))
+
+#Well, it might average out by ward? Oh wait, these are wards!
+
+
+
+#How does tenure work as social class proxy? Cf to professional/managerial----
+
+
+#Tenure
+filez <- list.files(path = 'StitchOutputs/GreatBritain/LBS_postcodeSectorWard_5Census_csvs',pattern = 'tenure',full.names = T)
+
+years <- c(1971,1981,1991,2001,2011)
+tenure <- lapply(1:5,function(x) read_csv(filez[x]) %>% mutate(year = years[x]))
+tenure <- bind_rows(tenure)
+
+
+#Load 71-11 social class
+filez <- list.files(path = 'StitchOutputs/GreatBritain/LBS_postcodeSectorWard_5Census_csvs',pattern = 'social',full.names = T)
+
+#First three decades have an 'other' category, two don't.
+#Add an 'other' containing zeroes to those that don't.
+years <- c(1971,1981,1991,2001,2011)
+#Dropping other from the first three
+sec <- lapply(1:5,function(x) read_csv(filez[x]) %>%
+                mutate(year = years[x]))
+
+sec[[4]]$other <- 0
+sec[[5]]$other <- 0
+#Now they all have same col names, should bind.
+sec <- bind_rows(sec)
+
+
+sec_props <- sec %>% 
+  mutate(
+    totalpop = prof_managerial + skilled_nonmanual + skilled_manual + unskilled + other,
+    prof_managerial_prop = (prof_managerial/totalpop)*100,
+    skilled_nonmanual_prop = (skilled_nonmanual/totalpop)*100,
+    skilled_manual_prop = (skilled_manual/totalpop)*100,
+    unskilled_prop = (unskilled/totalpop)*100,
+    other_prop = (other/totalpop)*100
+  )
+
+tenure_props <- tenure %>% 
+  mutate(
+    totalpop = ownerocc + socialrent + privaterent + other,
+    ownerocc_prop = (ownerocc/totalpop)*100,
+    socialrent_prop = (socialrent/totalpop)*100,
+    privaterent_prop = (privaterent/totalpop)*100,
+    other_prop = (other/totalpop)*100
+  )
+
+
+
+#Compare prop ownerocc to prop professional_manag
+both <- left_join(
+  sec_props %>% dplyr::select(label,year,prof_managerial_prop),
+  tenure_props %>% dplyr::select(label,year,ownerocc_prop),
+  by = c('year','label')
+)
+
+ggplot(both %>% sample_n(5000), aes(x = prof_managerial_prop, y = ownerocc_prop)) +
+  geom_point(alpha=0.2) +
+  geom_smooth(method='lm') +
+  facet_wrap(~year)
+
+summary(lm(data = both %>% filter(year==1971), ownerocc_prop~prof_managerial_prop))
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#EDUCATION (AS PROXY FOR SOCIAL CLASS)----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#Only available common cat: degree/higher vocational. Match may not be perfect, let's see.
+#Age groups differ a little too.
+
+#~~~~~~~~~~~~~~~~~~
+#EDUCATION 1971----
+#~~~~~~~~~~~~~~~~~~
+
+educ1971 <- read_csv('1971/GreatBritain/GB_1971_qualification.csv')
+#Keep just table row code numbers
+names(educ1971) <- gsub(x = names(educ1971),pattern = 'c71s23_',replacement = '')
+
+#three columns:
+#SEG of persons total: 358
+#With HN or degree: 363
+#Below that, TOTAL for HN or degree not in employment: 399 
+
+#Actually no, looking at the numbers - that bottom TOTAL is the total for all HN/Degree
+#Both in employment and not.
+#Best check if that's the case for the total persons too...
+#Yeah, we need:
+#Actually actually: the SEG of persons latter total is non-EA. We don't want that (I'm reasonably sure...!)
+#So it's 
+#SEG of persons total: 358
+#Total degree/HN: 399
+
+
+#So assuming 358 is everyone (economically active)
+#Can make a "non-degree / other" category by subtracting
+educ1971 <- educ1971 %>% 
+  mutate(
+    degreehighervoc = `399`,
+    other = `358` - degreehighervoc
+  ) %>% dplyr::select(1,degreehighervoc,other)
+
+View(sample_n(educ1971,200))
+
+
+
+#INTERSECT
+#the shapefile being assigned to
+lrg <- readOGR(dsn="C:/Data/MapPolygons/GreatBritain/1991","GB_wards_pcs_agg4correctCount")
+
+#Get the intersect geog:
+its71 <- readOGR("Intersects/GreatBritain5CensusLBS_7181","GB71EDs_to_GB91PCSagg4correctCount")
+
+table(educ1971$`Zone Code` %in% its71$zone_code)
+
+its_smallZoneIDColumn <- 1
+its_largeZoneIDColumn <- 2
+dta_zoneIDcolumn <- 1
+lrgID <- 1#cos it won't always match lrg name in intersect cos of clashes e.g. "label_2"
+datacols <- c(2:3)#from dta
+
+result <- moveData(its71,educ1971,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols)
+
+#Looks like it worked...
+View(sample_n(result@data,50))
+
+df <- data.frame(result)
+
+# write_csv(df,'data/census_sources/econActiveSources/output/1971econActive.csv')
+write_csv(df,'StitchOutputs/GreatBritain/LBS_postcodeSectorWard_5Census_csvs/1971highereducation_10percentsample.csv')
+
+
+
+#~~~~~~~~~~~~~~~~~~
+#NOT DONE: EDUCATION 1981----
+#~~~~~~~~~~~~~~~~~~
+
+
+
+#~~~~~~~~~~~~~~~~~~
+#EDUCATION 1991----
+#~~~~~~~~~~~~~~~~~~
+
+#LBS84
+#52: "All persons qualified at level a, b or c aged 18 up to pensionable age"
+#1: all persons age 18 or over
+#10% sample again (but unlike 1981 we have total persons)
+educ1991 <- read_csv('1991/GreatBritain/1991_GB_qualifications.csv')
+names(educ1991) <- gsub(x = names(educ1991),pattern = 'l8400',replacement = '')
+
+educ1991 <- educ1991 %>% 
+  rename(degreehighervoc = `52`) %>% 
+  mutate(other = `01` - degreehighervoc) %>% 
+  dplyr::select(`Zone ID`,degreehighervoc,other)
+
+
+
+pcs91shp <- readOGR("C:/Data/MapPolygons/GreatBritain/1991","GB_wards_pcs_agg4correctCount")
+
+#Yup
+shp_df <- data.frame(pcs91shp)
+shp_df$label <- as.character(shp_df$label)
+shp_df$fnl_rsL <- as.character(shp_df$fnl_rsL)
+
+#work only on those with more than one zone to aggregate
+shp_df <- shp_df[!is.na(shp_df$fnl_rsL),]
+
+#Each element a list of zones to combine
+zonez <- lapply(c(1:nrow(shp_df)), 
+                function(x) c(shp_df$label[x],
+                              unlist(lapply(shp_df$fnl_rsL[x], function(y) strsplit(y,"\\|"))))
+)
+
+
+#most will remain the same...
+educ1991$aggID <- educ1991$`Zone ID`
+
+#label new zones with the zone being aggregated to
+for(i in 1:length(zonez)) {
+  
+  #First is the new ID name, all are the ones to replace with it 
+  #(though the first has already been done so could skip that...)
+  educ1991$aggID[educ1991$`Zone ID` %in% zonez[[i]] ] <- zonez[[i]][1]
+  
+}
+
+#aggregate by zone for all columns
+#http://stackoverflow.com/questions/21295936/can-dplyr-summarise-over-several-variables-without-listing-each-one
+agg2 <- educ1991[,2:4] %>% group_by(aggID) %>% 
+  summarise_each(funs(sum))
+
+names(agg2)[names(agg2)=="aggID"] <- "label"
+
+#Just check that the zero-count agg2 zones are just shipping
+#zeroes <- agg2[apply(agg2[,2:3],1,sum)==0,]
+#zeroes <- merge(zeroes[,1],ea91final,by.x = 'label',by.y = 'zone')
+#All shipping. Tick. 
+#So this means, presuming the same numbers, we'll be OK merging on the geography with other variables.
+#table(as.character(zeroes$label))
+
+#Attach to geography and save
+geogz <- merge(pcs91shp,agg2,by = "label")
+
+geogzdf <- data.frame(geogz)
+#View(sample_n(geogzdf,100))
+
+write_csv(geogzdf,'StitchOutputs/GreatBritain/LBS_postcodeSectorWard_5Census_csvs/1991highereducation_10percentsample.csv')
+
+
+
+#~~~~~~~~~~~~~~~~~~
+#EDUCATION 2001----
+#~~~~~~~~~~~~~~~~~~
+
+#UV024 England Wales
+#01 = all people (it's saying actually all people but that seems odd for a table on quals. Let's see.)
+#06 = level 4/5 (which is what we want)
+#Scotland: UV025... this is all people 16-74. Hmmph.
+
+#So actually, for direct comparability, we need...
+#England Wales - KS013. Now 16-74 year olds
+#1 = all people in that age range
+#6 = level 4/5
+
+#Scotland: equivalent is same field numbers, so works. Also KS013
+educ2001 <- bind_rows(
+  read_csv('2001/England/2001_England_KS013_qualifications.csv'),
+  read_csv('2001/Wales/2001_Wales_KS013_qualifications.csv'),
+  read_csv('2001/Scotland/2001_Scotland_KS013_qualifications.csv')
+)
+
+names(educ2001) <- gsub(x = names(educ2001),pattern = 'ks013000',replacement = '')
+
+
+educ2001 <- educ2001 %>% 
+  rename(degreehighervoc = `6`) %>% 
+  mutate(other = `1` - degreehighervoc) %>% 
+  dplyr::select(`Zone Code`,degreehighervoc,other)
+
+#View(sample_n(educ2001,100))
+
+#INTERSECT
+#the shapefile being assigned to
+lrg <- readOGR(dsn="C:/Data/MapPolygons/GreatBritain/1991","GB_wards_pcs_agg4correctCount")
+
+its01 <- readOGR("Intersects/GreatBritain3CensusLBS","GreatBritain2001OAs_to_91PCS_wards")
+
+#Check match to data. 8 false.
+table(educ2001$`Zone Code` %in% its01$zone_code)
+
+
+its_smallZoneIDColumn <- 1
+its_largeZoneIDColumn <- 2
+dta_zoneIDcolumn <- 1
+lrgID <- 1#cos it won't always match lrg name in intersect cos of clashes e.g. "label_2"
+datacols <- c(2:3)#from dta
+
+result <- moveData(its01,educ2001,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols)
+
+df <- data.frame(result)
+View(sample_n(df,100))
+
+write_csv(df,'StitchOutputs/GreatBritain/LBS_postcodeSectorWard_5Census_csvs/2001highereducation.csv')
+
+
+
+#~~~~~~~~~~~~~~~~~~
+#EDUCATION 2011----
+#~~~~~~~~~~~~~~~~~~
+
+educ2011 <- read_csv('2011/GreatBritain/2011_GB_highest_qualification.csv')
+
+#Check that first col is looking like tot pop in this group... yeeees? Could do with pop to check against
+#View(sample_n(educ2011,100))
+educ2011 <- educ2011 %>% 
+  rename(degreehighervoc = `Highest level of qualification: Level 4 qualifications and above`) %>% 
+  mutate(other = `All categories: Highest level of qualification` - degreehighervoc) %>% 
+  dplyr::select(`2011 output area`,degreehighervoc,other)
+
+#View(sample_n(educ2011,100))
+
+
+#INTERSECT
+
+#the shapefile being assigned to
+lrg <- readOGR(dsn="C:/Data/MapPolygons/GreatBritain/1991","GB_wards_pcs_agg4correctCount")
+
+#Get the intersect geog:
+its11 <- readOGR("Intersects/GreatBritain3CensusLBS","GreatBritain2011OAs_to_91PCS_wards")
+
+#Check match to data. 2 false.
+table(educ2011$`2011 output area` %in% its11$code)
+
+its_smallZoneIDColumn <- 1
+its_largeZoneIDColumn <- 2
+dta_zoneIDcolumn <- 1
+lrgID <- 1#cos it won't always match lrg name in intersect cos of clashes e.g. "label_2"
+datacols <- c(2:3)#from dta
+
+result <- moveData(its11,educ2011,lrg,its_smallZoneIDColumn,its_largeZoneIDColumn,dta_zoneIDcolumn,lrgID,datacols)
+
+df <- data.frame(result)
+View(sample_n(df,200))
+
+write_csv(df,'StitchOutputs/GreatBritain/LBS_postcodeSectorWard_5Census_csvs/2011highereducation.csv')
+
+
+#~~~~~~~~~~~~~~~~~~~
+#CHECK EDUC VARS-----
+#~~~~~~~~~~~~~~~~~~~
+
+#We're missing 1981 at the moment.
+
+#Smaller list, chart too busy
+citiesToKeep <- c(
+  "London",
+  "Manchester",
+  "Birmingham",
+  # "Bristol",
+  "Leeds",
+  "Sheffield & Rotherham",
+  "Glasgow",
+  "Edinburgh",
+  "Cardiff"
+)
+
+#Load geography, has TTWA in it
+GBgeog <- st_read('C:/Users/admin/Dropbox/SheffieldMethodsInstitute/CountryOfBirthOpenDataSets/data/gb_shapefile/gb_altered_wards_n_postcodesectors_w_lookup.shp')
+
+
+
+#Load 71-11 educ minus 81
+filez <- list.files(path = 'StitchOutputs/GreatBritain/LBS_postcodeSectorWard_5Census_csvs',pattern = 'higher',full.names = T)
+
+years <- c(1971,1991,2001,2011)
+educ <- lapply(1:4,function(x) read_csv(filez[x]) %>% mutate(year = years[x]))
+educ <- bind_rows(educ)
+
+#Check TTWA match. Tick!
+table(citiesToKeep %in% GBgeog$ttwa)
+
+#Link... don't need geographical info
+#Check match. Tick.
+table(GBgeog$zone %in% educ$label)
+
+educ <- educ %>% left_join(GBgeog %>% st_set_geometry(NULL) %>% dplyr::select(zone,ttwa), by = c('label'='zone'))
+
+#Nooow. Need,say, owner-occ as proportion of total, right?
+#And want to see social/privat rent as prop of total too plz
+
+#We should select our cities first
+#Then need to sum pops before finding proportions.
+educ_sums <- educ %>%
+  group_by(year,ttwa) %>% 
+  summarise(degreehighervoc =sum(degreehighervoc),other=sum(other))
+
+educ_sums <- educ_sums %>% 
+  mutate(
+    totalpop = degreehighervoc + other,
+    degreehighervoc_prop = (degreehighervoc/totalpop)*100,
+    other_prop = (other/totalpop)*100
+  )
+
+
+ggplot(educ_sums %>% filter(ttwa %in% citiesToKeep), aes(x = year, y = degreehighervoc_prop, colour = fct_reorder(ttwa,-degreehighervoc_prop)))+   geom_line() +
+  geom_point() +
+  scale_color_brewer(palette='Dark2')
+
+
+#Make a map!
+educ_props <- educ %>% 
+  mutate(
+    totalpop = rowSums(.[3:4])
+  ) %>% 
+  mutate_at(vars(`degreehighervoc`:`other`), funs( (./totalpop)*100 ))
+
+#Check proportions are correct...tick
+apply(educ_props %>% dplyr::select(`degreehighervoc`:`other`),1,sum)
+
+
+#London geog
+london <- GBgeog %>% filter(ttwa=='London')
+
+#Join educ proportion data
+london <- left_join(london,educ_props,by=c('zone'='label'))
+
+library(tmap)
+
+map <- tm_shape(london) +
+  tm_polygons(col = 'degreehighervoc', style = 'jenks', n = 12, palette = 'plasma') +
+  tm_facets(by = 'year', ncol = 1, nrow = 1) 
+
+
+tmap_animation(map, filename = 'R_outputs/CensusHarmonising/london_degreehighervoc.gif', width = 2000, height = 1000, delay = 150)
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#MAP OVERVIEW FOR TTWAS AND OTHER THINGS----
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#Using population for 1991 wards/pcs. Find pop per km2, use as basis to show urban/rural
+#Or actually can show as smooth with boundary laid over if I play in QGIS.
+
+#Just getting total persons ('present residents') from LBS table 1
+people91 <- read_csv('1991/GreatBritain/1991_GB_presentresidents.csv')
+
+people91 <- people91 %>% 
+  rename(people = l010001)
+
+
+#Reassign to tweaked geog
+pcs91shp <- readOGR("C:/Data/MapPolygons/GreatBritain/1991","GB_wards_pcs_agg4correctCount")
+
+#Yup
+shp_df <- data.frame(pcs91shp)
+shp_df$label <- as.character(shp_df$label)
+shp_df$fnl_rsL <- as.character(shp_df$fnl_rsL)
+
+#work only on those with more than one zone to aggregate
+shp_df <- shp_df[!is.na(shp_df$fnl_rsL),]
+
+#Each element a list of zones to combine
+zonez <- lapply(c(1:nrow(shp_df)), 
+                function(x) c(shp_df$label[x],
+                              unlist(lapply(shp_df$fnl_rsL[x], function(y) strsplit(y,"\\|"))))
+)
+
+
+#most will remain the same...
+people91$aggID <- people91$`Zone ID`
+
+#label new zones with the zone being aggregated to
+for(i in 1:length(zonez)) {
+  
+  #First is the new ID name, all are the ones to replace with it 
+  #(though the first has already been done so could skip that...)
+  people91$aggID[people91$`Zone ID` %in% zonez[[i]] ] <- zonez[[i]][1]
+  
+}
+
+#aggregate by zone for all columns
+#http://stackoverflow.com/questions/21295936/can-dplyr-summarise-over-several-variables-without-listing-each-one
+agg2 <- people91[,3:4] %>% group_by(aggID) %>% 
+  summarise_each(funs(sum))
+
+names(agg2)[names(agg2)=="aggID"] <- "label"
+
+#Attach to geography and save
+geogz <- merge(pcs91shp,agg2,by = "label")
+
+geogzdf <- data.frame(geogz)
+#View(sample_n(geogzdf,100))
+
+write_csv(geogzdf,'StitchOutputs/GreatBritain/LBS_postcodeSectorWard_5Census_csvs/1991peoplepresent_count.csv')
+
+#Convert to sp
+#Add field for people per km^2
+geogz_sf <- st_as_sf(geogz)
+geogz_sf$km2 <- as.numeric(st_area(geogz_sf$geometry))/1000000
+#people per km^2
+geogz_sf$people_per_km2 <- geogz_sf$people/geogz_sf$km2
+
+
+st_write(geogz_sf, 'QGIS/1991_LBS_people_per_km2.shp')
+
+
+#What's pop density distribution?
+ggplot(geogz_sf, aes(x = people_per_km2)) +
+  geom_histogram(bins = 50)
+
+
+
 
 
 
