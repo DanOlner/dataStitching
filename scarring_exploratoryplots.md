@@ -63,10 +63,12 @@ I wanted to see what Sheffield's unemployment looked like at each Census **compa
 * Compared the top ten TTWAs again
 * Animated each Census on the same scale
 
+
 Things to note:
 
 * Sheffield wards don't appear extreme generally... (compare to Liverpool and Glasgow, for example)
 * But note: Sheffield unemployment extends right through the first three Censuses, where many others see a reduction. This supports what the maps are showing - the Sheffield region seemed to have a longer-term unemployment impact (along with other clusters) compared to much of GB.
+* It's interesting how little the **relative shape of unemployment** changed across the decades for certain areas. Sheffield changed more than most.
 
 
 ![](R_outputs/Scarring/census_unemployment_zscore_violinplots.gif)<!-- -->
