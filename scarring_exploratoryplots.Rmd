@@ -36,7 +36,15 @@ the UK: The Role of Health and Local Labour
 Market, Roberts & Taylor 2019](https://www.sheffield.ac.uk/media/7133/download).) Wonder if it's possible to get data on that? (They use BHS here.)
 
 
-# Top ten TTWAs (by economically active population): change in unemployment over the 5 Censuses
+# Starting with just looking at unemployment change within the Sheffield/Rotherham TTWA itself...
+
+```{r}
+#https://stackoverflow.com/questions/60420075/load-premade-gganimate-gif-into-rmarkdown-chunk-to-caption
+knitr::include_graphics("R_outputs/Scarring/sheffield_unemploymentchange5census.gif")
+```
+
+
+# Sheffield in context: top ten TTWAs (by economically active population): change in unemployment over the 5 Censuses
 
 Note Sheffield and London between 1981 and 1991: unemployment rising where most drop.
 
@@ -108,13 +116,6 @@ Things to note:
 knitr::include_graphics("R_outputs/Scarring/census_unemployment_zscore_violinplots.gif")
 ```
 
-
-# And just to look at unemployment change within the Sheffield/Rotherham TTWA itself...
-
-```{r}
-#https://stackoverflow.com/questions/60420075/load-premade-gganimate-gif-into-rmarkdown-chunk-to-caption
-knitr::include_graphics("R_outputs/Scarring/sheffield_unemploymentchange5census.gif")
-```
 
 
 

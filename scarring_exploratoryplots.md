@@ -23,11 +23,16 @@ the UK: The Role of Health and Local Labour
 Market, Roberts & Taylor 2019](https://www.sheffield.ac.uk/media/7133/download).) Wonder if it's possible to get data on that? (They use BHS here.)
 
 
-# Top ten TTWAs (by economically active population): change in unemployment over the 5 Censuses
+# Starting with just looking at unemployment change within the Sheffield/Rotherham TTWA itself...
+
+![](R_outputs/Scarring/sheffield_unemploymentchange5census.gif)<!-- -->
+
+
+# Sheffield in context: top ten TTWAs (by economically active population): change in unemployment over the 5 Censuses
 
 Note Sheffield and London between 1981 and 1991: unemployment rising where most drop.
 
-![](scarring_exploratoryplots_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+![](scarring_exploratoryplots_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 Sheffield and London were 2 of 50% of TTWAs that saw unemployment rise from 81-91. The pattern between Censuses is:
 
@@ -43,11 +48,11 @@ So, unemployment rose everywhere from 71-81. For that 50% split from 81 to 91, t
 * Redder = unemployment rising more
 * Bluer = unemployment dropping more
 
-![](scarring_exploratoryplots_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+![](scarring_exploratoryplots_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
 That cluster near Sheffield/Rotherham where unemployment went up:
 
-![](scarring_exploratoryplots_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+![](scarring_exploratoryplots_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 
 # Comparing change within each Census (animated GIF)
@@ -66,10 +71,6 @@ Things to note:
 
 ![](R_outputs/Scarring/census_unemployment_zscore_violinplots.gif)<!-- -->
 
-
-# And just to look at unemployment change within the Sheffield/Rotherham TTWA itself...
-
-![](R_outputs/Scarring/sheffield_unemploymentchange5census.gif)<!-- -->
 
 
 
