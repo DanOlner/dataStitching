@@ -13,7 +13,7 @@ output:
 
 
 
-**These plots or just for thinking, not for publishing.**
+**These plots are just for thinking, not for publishing.**
 
 Some pre-amble bullet points:
 

@@ -26,7 +26,7 @@ img <- readPNG("images/t_value_onesample_equation.png")
 grid.raster(img)
 ```
 
-**These plots or just for thinking, not for publishing.**
+**These plots are just for thinking, not for publishing.**
 
 Some pre-amble bullet points:
 
