@@ -1,0 +1,77 @@
+---
+title: "Scarring_regressions"
+author: "Dan Olner"
+date: "12/04/2022"
+output:
+  pdf_document:
+    keep_tex: true
+header-includes:
+   - \usepackage{dcolumn}    
+classoption: landscape
+---
+
+```{r setup, include=FALSE}
+#https://stackoverflow.com/questions/59140267/stargazer-output-in-rmarkdown-what-is-my-illegal-charachter - where I got the yaml header from for loading dcolumn package for stargazer to work
+knitr::opts_chunk$set(echo = F, message = F, warning = F)
+```
+
+```{r}
+library(tidyverse)
+library(stargazer)
+
+agedenomdata <- readRDS("R_data/agedenomdata.rds")
+
+agedenom1 <- lm(`71-11` ~ `71-81` * nonUK_pc71, data = agedenomdata)
+agedenom2 <- lm(`81-11` ~ `71-81` * nonUK_pc71, data = agedenomdata)
+agedenom3 <- lm(`81-91` ~ `71-81` * nonUK_pc71, data = agedenomdata)
+agedenom4 <- lm(`91-01` ~ `71-81` * nonUK_pc71, data = agedenomdata)
+agedenom5 <- lm(`01-11` ~ `71-81` * nonUK_pc71, data = agedenomdata)
+
+eadata <- readRDS("R_data/eadata.rds")
+
+ea1 <- lm(`71-11` ~ `71-81` * nonUK_pc71, data = eadata)
+ea2 <- lm(`81-11` ~ `71-81` * nonUK_pc71, data = eadata)
+ea3 <- lm(`81-91` ~ `71-81` * nonUK_pc71, data = eadata)
+ea4 <- lm(`91-01` ~ `71-81` * nonUK_pc71, data = eadata)
+ea5 <- lm(`01-11` ~ `71-81` * nonUK_pc71, data = eadata)
+
+
+```
+
+
+```{r results='asis'}
+stargazer(agedenom1,agedenom2,agedenom3,agedenom4,agedenom5, title="Great Britain, denominator: 15-64", align=TRUE, header = F)#latex default / header false gets rid of comment at top
+
+stargazer(ea1,ea2,ea3,ea4,ea5, title="Great Britain, denominator: econ active", align=TRUE, header = F)
+
+```
+
+
+```{r}
+#REPEAT FOR SHEFFIELD
+agedenom1 <- lm(`71-11` ~ `71-81` * nonUK_pc71, data = agedenomdata %>% filter(ttwa == "Sheffield & Rotherham"))
+agedenom2 <- lm(`81-11` ~ `71-81` * nonUK_pc71, data = agedenomdata %>% filter(ttwa == "Sheffield & Rotherham"))
+agedenom3 <- lm(`81-91` ~ `71-81` * nonUK_pc71, data = agedenomdata %>% filter(ttwa == "Sheffield & Rotherham"))
+agedenom4 <- lm(`91-01` ~ `71-81` * nonUK_pc71, data = agedenomdata %>% filter(ttwa == "Sheffield & Rotherham"))
+agedenom5 <- lm(`01-11` ~ `71-81` * nonUK_pc71, data = agedenomdata %>% filter(ttwa == "Sheffield & Rotherham"))
+
+ea1 <- lm(`71-11` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "Sheffield & Rotherham"))
+ea2 <- lm(`81-11` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "Sheffield & Rotherham"))
+ea3 <- lm(`81-91` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "Sheffield & Rotherham"))
+ea4 <- lm(`91-01` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "Sheffield & Rotherham"))
+ea5 <- lm(`01-11` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "Sheffield & Rotherham"))
+
+
+```
+
+
+```{r results='asis'}
+stargazer(agedenom1,agedenom2,agedenom3,agedenom4,agedenom5, title="Sheffield/Rotherham, denominator: 15-64", align=TRUE, header = F)#latex default / header false gets rid of comment at top
+
+stargazer(ea1,ea2,ea3,ea4,ea5, title="Sheffield/Rotherham, denominator: econ active", align=TRUE, header = F)
+
+```
+
+
+
+

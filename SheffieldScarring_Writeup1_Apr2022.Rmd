@@ -1,0 +1,225 @@
+---
+title: "Economic scarring in Sheffield & Rotherham"
+author: "Dan Olner"
+date: "22/04/2022"
+output:
+  word_document: default
+  pdf_document:
+    keep_tex: yes
+header-includes: \usepackage{dcolumn}
+---
+
+```{r setup, include=FALSE}
+#https://stackoverflow.com/questions/59140267/stargazer-output-in-rmarkdown-what-is-my-illegal-charachter - where I got the yaml header from for loading dcolumn package for stargazer to work
+knitr::opts_chunk$set(echo = F, message = F, warning = F, dpi = 300)
+```
+
+```{r}
+library(tidyverse)
+library(stargazer)
+
+
+```
+
+
+Our analysis of scarring in Sheffield uses several ideas from a paper by Patricia Rice and Anthony Venables (Rice & Venables 2021), in which they explore how the effect of economic shocks in the 1970s are still affecting Great Britain today. Here, we are able to use much a finer-grained geography, allowing us to examine employment change *within* areas, rather than just comparing areas. The top-level geographies we use are **travel to work areas (TTWA)**: each of these zones aims to capture the majority of commuting happening within that zone - they tend to centre on major towns and cities, and include their surrounding commute areas. Below this level - for example, when looking at Sheffield and Rotherham in detail - we use **electoral wards**.
+
+The decade from 1971 to 1981 saw employment decrease in every single TTWA in Great Britain. As Rice & Venables note, "It is not the case that the LADs that suffered the largest negative employment shocks in the 1970s were performing poorly in 1971" (p.133). This is certainly true for Sheffield. To give an overview of the employment change pattern from 1971 to 2011, and how Sheffield fits into that pattern, figure 1 plots the employment percentage in ten TTWAs - plus Sheffield & Rotherham - in each of the five Census decades in our data. It picks out five TTWAs that saw the largest drops in employment between 1971 to 1981 (in red) and the small drops (in blue). The red TTWAs are examples of the point Rice & Venables make: many areas in Great Britain that had very high employment levels in 1971 were hit hardest in the subsequent ten years, seeing huge changes in their employment fortunes. Sheffield is closer to one of these type of areas - strong employment in 1971, hit very hard. 
+
+Note, however, how all the TTWAs in this figure with the largest employment decrease from 1971 to 1981 (in red) 'bounce back' in 1981 to 1991. This is what Rice & Venables suggest should be expected if there is no economic 'scarring': adjustment should take place through, for example, migration - both internal within Great Britain, and via non-UK migrants moving to areas - leading to employment equilibrium, geographically (ibid p.134). However, almost exactly fifty percent of Great Britain's TTWAs saw their employment *drop* from 1981 to 1991; Sheffield is part of a cluster of areas that suffered from this two-decade-long economic decline, as can be seen in figure 1.
+
+
+
+```{r fig.height = 4}
+tops <- readRDS("R_data/topbottom_ttwas_7181empdrop_inc_Sheffield.rds")
+
+library(gridExtra)
+
+x <- ggplot(tops, aes(x = factor(censusYear), y = percentemployed, colour = Sheffield, shape = Sheffield, size = Sheffield, alpha = Sheffield, group = ttwa)) +
+  geom_line() +
+  geom_point() +
+  scale_size_manual(values = c(1,1,3)) +
+  scale_alpha_manual(values = c(0.6,0.6,1)) +
+  geom_point(data = tops %>% filter(ttwa!="Sheffield & Rotherham"), aes(x = factor(censusYear), y = percentemployed), size = 3, alpha = 0.5) +
+  geom_point(data = tops %>% filter(ttwa=="Sheffield & Rotherham"), aes(x = factor(censusYear), y = percentemployed), size = 7) +
+  labs(colour="",shape="",size="",alpha="") +
+  xlab("Census year") +
+  ylab("Percent employed") 
+  # labs(title="Figure 1")+
+  # theme(plot.title = element_text(face="bold"), element_text(hjust = 0.5))
+
+grid.arrange(x,bottom="Figure 1:\nTTWAs with 5 largest and smallest drops in employment 1971-01\nwith Sheffield & Rotherham overlaid")
+
+```
+
+
+Figure 2 shows the raw employment percent numbers for each of the more than ten thousand wards in Great Britain, with one Census on the x axis and the subsequent decade on the y axis. A line of slope 1 passing through zero is overlaid in green, and Sheffield & Rotherham's wards are overlaid in red. Figure 2(a) shows the change between 1971 and 1981: any wards below the slope line had higher employment in 1971 than 1981: very few gained in that decade, and it is clear that all of Sheffield's wards were affected by the shock more strongly than others (they are at the lower side of the plot). Figure 2(b) shows the same for the transition in employment from 1981 to 1991, a decade later: the slope line divides wards fairly evenly between those that gained employment within that decade and those that lost - supporting the point above that around 50% of areas saw employment drop for a further decade. The majority of Sheffield's wards are on the lower side of the line - their employment level dropped again - though there are four to five wards that gained a little.
+
+[Seems to me useful to include these before the slightly more abstract use of "difference from average emlpoyment ppt per Census"]
+
+
+```{r fig.height=4}
+ea_wide <- readRDS("R_data/ea_wide.rds")
+
+library(cowplot)
+
+p1 <- ggplot() +
+  geom_point(data = ea_wide %>% filter(ttwa!="Sheffield & Rotherham"), aes(x = `1971`, y = `1981`), alpha = 0.5) +
+  geom_point(data = ea_wide %>% filter(ttwa=="Sheffield & Rotherham"), aes(x = `1971`, y = `1981`), colour="red", size = 2, shape = 17) +
+  geom_abline(slope = 1, intercept = 0, colour='green') 
+
+p2 <- ggplot() +
+  geom_point(data = ea_wide %>% filter(ttwa!="Sheffield & Rotherham"), aes(x = `1981`, y = `1991`), alpha = 0.5) +
+  geom_point(data = ea_wide %>% filter(ttwa=="Sheffield & Rotherham"), aes(x = `1981`, y = `1991`), colour="red", size = 2, shape = 17) +
+  geom_abline(slope = 1, intercept = 0, colour='green') 
+
+x <- plot_grid(p1, p2, labels = c('A', 'B'), label_size = 12)
+
+grid.arrange(x,bottom="Figure 2: raw employment percentages per ward in Great Britain\nEarlier Census on the x axis, subsequent Census on the y axis\nSlope line of 1: wards below the line had higher employment at the earlier Census.")
+
+```
+
+Rice & Venables find a persistent effect of the 1971-81 shock on employment levels in later decades at local authority scale across England and Wales. There are two aspects of their analysis that we re-create here at the smaller ward scale of Sheffield and Rotherham. First, we use the **percentage point difference from the average employment rate at each Census** (we label this the **employment rate (ER)**: this makes cross-Census comparisons easier. Second, we then find how ER *changes* between different Censuses and use this to compare how employment changed between 1971-1981 (the economic shock period) and other time periods.
+
+The argument Rice & Venables makes is as follows: if places were not economically scarred by the 1971-81 shock, 'one wou'convergence' would be expected:
+
+> "The classic (or neoclassical) forces for convergence are simply that wage adjustment will cause some combination of replacement jobs moving into adversely affected places, and population moving out." (p.134)
+
+They use change of ER betwewen Census periods to examine whether this happened by comparing two time periods to the 'shock' decade of 1971-81. Correlating the shock change to 1971 to 2011 - overlapping the same time period - gives an indication as to whether the shock impacts persisted to the most recent census. A positive correlation would be expected if they did. the shock period is also compared to the whole period *after* 1981 (so, correlating 1971-81 with 1981-2011): if convergence had taken place, there would be 'bounceback': a negative correlation as employment reverts some way to its previous level.
+
+Rice & venables find no convergence in the latter period. However, when looking at the sub-regional scale of wards, some convergence can be found. Figure 3 shows this for Sheffield & Rotherham. Figure 3(a) examines 1971-81 versus 1971-2011: the positive slope indicates persistence of the 1971-81 shock. Conversely, figure 3(b) has a negative slope, showing there was some bounceback for Sheffield wards in the latter time period. Note, this is not true for all wards however: the zero axes are marked to help make this clear, with two examples in the plots. The Sheffield ward marked as a blue triangle is in the bottom left quadrant for the 1971-81 versus 1971-11 comparison in 3(a), but in the top left quadrant in 3(b): while that ward dropped relative to other wards in the shock period, it bounced back in the latter period. In contrast, the ward marked with a red square is in the bottom left of both plots: it dropped relative to other wards in all examined time periods, seeing less bounceback (it is slightly less negative in the latter period).
+
+Overall, then, there is evidence of convergence - but not for very ward within Sheffield & Rotherham and, as shown above, Sheffield was relatively worse off after the shock than many other areas.
+
+
+```{r fig.height = 3.5}
+eadata <- readRDS("R_data/eadata.rds")
+
+#Add example point to discuss
+#glimpse(eadata %>% filter(ttwa=="Sheffield & Rotherham"))
+
+# p1 <- ggplot(eadata %>% filter(ttwa=='Sheffield & Rotherham'), aes(x = `71-81`, y = `71-11`, label = label)) +
+p1 <- ggplot(eadata %>% filter(ttwa=='Sheffield & Rotherham'), aes(x = `71-81`, y = `71-11`)) +
+  geom_point(size = 2) +
+  geom_smooth(method='lm', alpha=0.5) +
+  geom_vline(xintercept = 0, colour='blue') +
+  geom_hline(yintercept = 0, colour='blue') +
+  geom_point(data = eadata %>% filter(label=="05CGFY"),  size = 4, colour = 'red', shape = 'square') +
+  geom_point(data = eadata %>% filter(label=="05CFFH"),  size = 4, colour = 'blue', shape = 'triangle')  
+  # geom_label()
+  
+
+# p2 <- ggplot(eadata %>% filter(ttwa=='Sheffield & Rotherham'), aes(x = `71-81`, y = `81-11`, label = label)) +
+p2 <- ggplot(eadata %>% filter(ttwa=='Sheffield & Rotherham'), aes(x = `71-81`, y = `81-11`)) +
+  geom_point(size = 2) +
+  geom_smooth(method='lm', alpha=0.5) +
+  geom_vline(xintercept = 0, colour='blue') +
+  geom_hline(yintercept = 0, colour='blue') +
+  geom_point(data = eadata %>% filter(label=="05CGFY"),  size = 4, colour = 'red', shape = 'square') +
+  geom_point(data = eadata %>% filter(label=="05CFFH"),  size = 4, colour = 'blue', shape = 'triangle')  
+  # geom_label()
+
+x <- plot_grid(p1, p2, labels = c('A', 'B'), label_size = 12)
+
+grid.arrange(x,bottom="Figure 3: plots of the 1971-81 shock versus (A) 1971-11 & (B) 1981-11")
+
+```
+
+
+We examine this further by using the same variables in figure 3 for a set of regressions, with the 1971-81 shock period's change in ER as the main predictor variable and a series of different time periods as the outcome. We include a second predictor: the percentage of non-UK-born people in each ward in 1971, also interacting this with the 71-81 shock predictor. Here, we are asking: if there was a high migrant population in an area in 1971, did that have a protective or exacerbating effect on employment change?
+
+We include three sets of identical regressions for different geographies: first for Great Britain as a whole, then Sheffield & Rotherham, and - for reasons explained below - London. As well as regressions for the correlations examined in figure 3, the other outcome periods included are each subsequent decade: 1981-91, 1991-2001 and 2001-2011. These are included to examine the full pattern of how the 71-81 shock period affected later decades.
+
+Each regression table shows the pattern identified above: persistence of the shock through the entire 1971-2011 period (positive coefficients for the '71-81' predictor in column 1, matching the slope in figure 3a) and a bounceback effect for 1981-2011 (column 2's negative coeffients).
+
+For Great Britain as a whole (table 1), for both the 71-11 and 81-11 periods, the non-UK-born coefficient is negative. Specifically, for every 10% increase in non-UK-born, 71-11 and 81-11 change decreases by 0.4 percentage points: places with a higher non-UK-born proportion saw a larger relative drop. The interaction term for Great Britain shows how much the 71-81 predictor's slope changes as a result of a 1 unit change in non-UK-born proportion. While it is positive here, the effect size is small, making any conclusions from the interaction tenuous.
+
+Sheffield & Rotherham (table) certainly see the 1971-81 shock impact in columns 1 and 2: there is a larger initial shock value, and a smaller bounceback coefficient in column 2, confirming the plots above. The lack of significance of the non-UK-born coefficient is likely due to the much smaller number of wards in this area compared to Great Britain.
+
+Even, though it cannot be seen clearly for Sheffield, does the Great Britain result mean non-UK-born people were having a negative effect on the employment shock? One problem with this conclusion is that, when examining the whole of Great Britain, no distinction is made between urban and rural areas. It is urban areas where the 1971-81 shock was primarily felt - and these are also the places where migrants would go to find work. The positive coefficient may just be reflecting this urban/rural split: more migrants lived in places hardest hit.
+
+To test this, the same regressions for London are also included (table 3). The whole London TTWA is mostly urban, and it has always had a large non-UK-born population. Any migrant impacts *within* London should be able to test for an urban/rural effect. As can be seen in columns 1 and 2 for the non-UK-born coefficient, a 10% increase in non-UK-born is associated with a nearly one-percent-point increase in 71-11 and 81-11 ER change. In contrast to Great Britain as a whole, places with a higher perentage non-UK-born in London did better in terms of employment impacts from the shock. This supports the theory that the difference in Great Britain as a whole is due to the urban/rural split.
+
+
+```{r results='asis'}
+eadata <- readRDS("R_data/eadata.rds")
+
+ea1 <- lm(`71-11` ~ `71-81` * nonUK_pc71, data = eadata)
+ea2 <- lm(`81-11` ~ `71-81` * nonUK_pc71, data = eadata)
+ea3 <- lm(`81-91` ~ `71-81` * nonUK_pc71, data = eadata)
+ea4 <- lm(`91-01` ~ `71-81` * nonUK_pc71, data = eadata)
+ea5 <- lm(`01-11` ~ `71-81` * nonUK_pc71, data = eadata)
+
+#latex default / header false gets rid of comment at top
+stargazer(ea1,ea2,ea3,ea4,ea5, title="Great Britain", align=TRUE, header = F)
+
+```
+
+
+```{r}
+#REPEAT FOR SHEFFIELD
+ea1 <- lm(`71-11` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "Sheffield & Rotherham"))
+ea2 <- lm(`81-11` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "Sheffield & Rotherham"))
+ea3 <- lm(`81-91` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "Sheffield & Rotherham"))
+ea4 <- lm(`91-01` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "Sheffield & Rotherham"))
+ea5 <- lm(`01-11` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "Sheffield & Rotherham"))
+
+
+```
+
+
+```{r results='asis'}
+stargazer(ea1,ea2,ea3,ea4,ea5, title="Sheffield/Rotherham", align=TRUE, header = F)
+
+```
+
+
+
+```{r}
+#REPEAT FOR LONDON
+ea1 <- lm(`71-11` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "London"))
+ea2 <- lm(`81-11` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "London"))
+ea3 <- lm(`81-91` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "London"))
+ea4 <- lm(`91-01` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "London"))
+ea5 <- lm(`01-11` ~ `71-81` * nonUK_pc71, data = eadata %>% filter(ttwa == "London"))
+
+
+```
+
+
+```{r results='asis'}
+stargazer(ea1,ea2,ea3,ea4,ea5, title="London", align=TRUE, header = F)
+
+```
+
+
+Lastly, we examine whether the 1971-81 shock had a lasting effect on deprivation in Sheffield and Rotherham. To do this, we re-create a figure from Rice & Venables: this plots employment percentages in 2011 against deprivation rank, and overlays what we label the 'shock decile'. This puts all wards into a decile based on how negative the effect of the 1971-81 shock was on their ED. Wards in decile 1 were the worst affected. The plot marks wards in deciles 1 and 2, thus showing where those worst impacted in 1971-81 found themselves in the 2019 deprivation rank.
+
+For the deprivation rank itself, we use the 2019 English indices of deprivation (ONS 2019), finding the population-weighted average deprivation score per ward before re-ranking. In figure 4, this rank is on the y axis: lower values at the bottom are more deprived wards.
+
+The plot includes both Sheffield & Rotherham and London, for comparison. Shock decile 1 wards (the worst impacted in 1971-81) are shown in red circles; decile 2 (second-worst) are green triangles. It is clear that Sheffield & Rotherham wards worst affected in 1971-81 have both lower employment levels in 2011, and are more deprived than others in the region. The graph for London confirms this pattern is repeated.
+
+
+```{r fig.height=5}
+x <- ggplot(eadata %>% filter(ttwa %in% c('London','Sheffield & Rotherham')) %>% 
+              mutate(ttwa = factor(ttwa, levels = c('Sheffield & Rotherham','London'))), 
+            aes(x = percentEmp2011, y = IMDrnk_, colour = `deciles_71-81_3levels`, shape = `deciles_71-81_3levels`,
+                                                                             size = `deciles_71-81_3levels`, alpha = `deciles_71-81_3levels`)) +
+  geom_point() +
+  facet_wrap(~ttwa, nrow=2) +
+  scale_size_manual(values = c(2,2,1)) +
+  scale_alpha_manual(values = c(1,1,0.6)) +
+  labs(colour = "Shock decile", shape = "Shock decile", size = "Shock decile", alpha = "Shock decile") +
+  xlab("Percent employment 2011") +
+  ylab("Ward IMD rank (population-weighted)")
+
+grid.arrange(x,bottom="Figure 4: 2011 employment percent vs English index of multiple deprivation 2019\npopulation-weighted average per ward\nShock deciles 1 and 2 overlaid")
+```
+
+
+
+
+
+
+
+
