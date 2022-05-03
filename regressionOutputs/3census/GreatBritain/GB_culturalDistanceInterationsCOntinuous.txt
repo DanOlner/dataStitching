@@ -1,0 +1,26 @@
+[1] Great Britain interactions continuous, formula: xij2011 ~ xij1991*value + w1991q*value + migshareMinusOwn1991*value
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.82827 -0.00307 -0.00165  0.00063  1.42834 
+
+Coefficients:
+                              Estimate  Std. Error t value            Pr(>|t|)    
+(Intercept)                -0.00196712  0.00012613  -15.60 <0.0000000000000002 ***
+xij1991                     0.25521737  0.00533201   47.87 <0.0000000000000002 ***
+value                       0.01421903  0.00063060   22.55 <0.0000000000000002 ***
+w1991q                      0.34124843  0.00703870   48.48 <0.0000000000000002 ***
+migshareMinusOwn1991        0.00111959  0.00001747   64.07 <0.0000000000000002 ***
+xij1991:value               0.79436428  0.02094377   37.93 <0.0000000000000002 ***
+value:w1991q               -0.33744130  0.02818457  -11.97 <0.0000000000000002 ***
+value:migshareMinusOwn1991 -0.00352122  0.00008386  -41.99 <0.0000000000000002 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.02038 on 193450 degrees of freedom
+Multiple R-squared:  0.6005,	Adjusted R-squared:  0.6005 
+F-statistic: 4.155e+04 on 7 and 193450 DF,  p-value: < 0.00000000000000022
+

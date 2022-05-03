@@ -1,0 +1,26 @@
+[1] Great Britain interactions, formula: xij2011 ~ xij1991*cdtoUKflag + w1991q*cdtoUKflag + migshareMinusOwn1991*cdtoUKflag
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.84845 -0.00305 -0.00172  0.00058  1.41357 
+
+Coefficients:
+                                          Estimate  Std. Error t value             Pr(>|t|)    
+(Intercept)                            -0.00090708  0.00008570 -10.584 < 0.0000000000000002 ***
+xij1991                                 0.29232317  0.00333947  87.536 < 0.0000000000000002 ***
+cdtoUKflagfurther                       0.00289269  0.00011835  24.442 < 0.0000000000000002 ***
+w1991q                                  0.27167460  0.00451053  60.231 < 0.0000000000000002 ***
+migshareMinusOwn1991                    0.00097599  0.00001178  82.846 < 0.0000000000000002 ***
+xij1991:cdtoUKflagfurther               0.21616399  0.00403282  53.601 < 0.0000000000000002 ***
+cdtoUKflagfurther:w1991q               -0.03404473  0.00543458  -6.264       0.000000000375 ***
+cdtoUKflagfurther:migshareMinusOwn1991 -0.00087935  0.00001589 -55.342 < 0.0000000000000002 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.02025 on 193450 degrees of freedom
+Multiple R-squared:  0.6058,	Adjusted R-squared:  0.6058 
+F-statistic: 4.247e+04 on 7 and 193450 DF,  p-value: < 0.00000000000000022
+

@@ -1,0 +1,178 @@
+[1] RICH
+$Aberdeen
+
+Call:
+lm(formula = xij2011 ~ xij1991 + w91q, data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.6035 -0.2592 -0.1550  0.1323  1.9290 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   0.3120     0.0511   6.105 8.74e-09 ***
+xij1991       0.2416     0.0705   3.426 0.000794 ***
+w91q          0.1498     0.1137   1.318 0.189681    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.4429 on 147 degrees of freedom
+Multiple R-squared:  0.1196,	Adjusted R-squared:  0.1076 
+F-statistic: 9.984 on 2 and 147 DF,  p-value: 8.594e-05
+
+
+$Dundee
+
+Call:
+lm(formula = xij2011 ~ xij1991 + w91q, data = x)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.18960 -0.08572 -0.03785  0.03530  0.88215 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.08799    0.02467   3.566  0.00046 ***
+xij1991      0.12003    0.08735   1.374  0.17106    
+w91q         0.33259    0.16344   2.035  0.04327 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.146 on 187 degrees of freedom
+Multiple R-squared:  0.04985,	Adjusted R-squared:  0.03969 
+F-statistic: 4.906 on 2 and 187 DF,  p-value: 0.008386
+
+
+$Edinburgh
+
+Call:
+lm(formula = xij2011 ~ xij1991 + w91q, data = x)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.90435 -0.14109 -0.04090  0.07895  1.94021 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.02880    0.02086   1.381    0.168    
+xij1991      0.73479    0.06080  12.085  < 2e-16 ***
+w91q         0.75421    0.09919   7.604 1.04e-13 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2947 on 637 degrees of freedom
+Multiple R-squared:  0.4578,	Adjusted R-squared:  0.4561 
+F-statistic: 268.9 on 2 and 637 DF,  p-value: < 2.2e-16
+
+
+$Glasgow
+
+Call:
+lm(formula = xij2011 ~ xij1991 + w91q, data = x)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.32507 -0.06179 -0.02881  0.02206  1.09871 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.047294   0.005454   8.671  < 2e-16 ***
+xij1991     0.382608   0.029811  12.834  < 2e-16 ***
+w91q        0.290029   0.044375   6.536 9.14e-11 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1242 on 1267 degrees of freedom
+Multiple R-squared:  0.3033,	Adjusted R-squared:  0.3022 
+F-statistic: 275.8 on 2 and 1267 DF,  p-value: < 2.2e-16
+
+
+[1] POOR
+$Aberdeen
+
+Call:
+lm(formula = xij2011 ~ xij1991 + w91q, data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.0275 -0.3164 -0.1198  0.0769  3.7329 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.10056    0.07592   1.325 0.187031    
+xij1991      0.41281    0.10864   3.800 0.000199 ***
+w91q         0.81747    0.16590   4.927  1.9e-06 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.6089 on 177 degrees of freedom
+Multiple R-squared:  0.282,	Adjusted R-squared:  0.2739 
+F-statistic: 34.75 on 2 and 177 DF,  p-value: 1.856e-13
+
+
+$Dundee
+
+Call:
+lm(formula = xij2011 ~ xij1991 + w91q, data = x)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.49995 -0.10079 -0.05178  0.03868  1.05294 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.01742    0.02425   0.718    0.473    
+xij1991      0.26669    0.05998   4.446 1.37e-05 ***
+w91q         0.70052    0.11101   6.310 1.46e-09 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2002 on 225 degrees of freedom
+Multiple R-squared:  0.3181,	Adjusted R-squared:  0.312 
+F-statistic: 52.48 on 2 and 225 DF,  p-value: < 2.2e-16
+
+
+$Edinburgh
+
+Call:
+lm(formula = xij2011 ~ xij1991 + w91q, data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.3742 -0.1421 -0.0445  0.0750  3.7660 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.05502    0.01996   2.757  0.00598 ** 
+xij1991      0.48614    0.04681  10.386  < 2e-16 ***
+w91q         0.48026    0.07415   6.477 1.68e-10 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.3248 on 765 degrees of freedom
+Multiple R-squared:  0.3108,	Adjusted R-squared:  0.309 
+F-statistic: 172.5 on 2 and 765 DF,  p-value: < 2.2e-16
+
+
+$Glasgow
+
+Call:
+lm(formula = xij2011 ~ xij1991 + w91q, data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.5506 -0.1021 -0.0515  0.0204  3.9058 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.069344   0.009376   7.396 2.31e-13 ***
+xij1991     0.399541   0.020101  19.877  < 2e-16 ***
+w91q        0.412718   0.030229  13.653  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.3061 on 1521 degrees of freedom
+Multiple R-squared:  0.4449,	Adjusted R-squared:  0.4442 
+F-statistic: 609.5 on 2 and 1521 DF,  p-value: < 2.2e-16
+
+

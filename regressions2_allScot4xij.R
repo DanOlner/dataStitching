@@ -756,6 +756,9 @@ plot(lookzcity$xij2011 ~ lookzcity$migshareMinusOwn1991)
 #3 CENSUS: PULL OUT COEFFICIENTS----
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#Reload
+sheet <- readRDS('R_data/sheet3census.rds')
+
 #Which wasn't done in an Rmd was it? Did I have sheets saved somewhere?
 #No, didn't save. Let's re-run and grab it all.
 #Test. Just using sheet to get zones to keep
@@ -772,7 +775,6 @@ plot(lookzcity$xij2011 ~ lookzcity$migshareMinusOwn1991)
 #                      function(city) compileSheetDiffZones(unique(sheet$label[sheet$urbanFiftyPercentPlus==1 
 #                                                                              & sheet$name == city])))
 # 
-
 formula3census <- 'xij2011 ~ xij1991 + w1991q + migshareMinusOwn1991 + lph91 + hsperacre91 + lpophs91 + ea91'
 
 

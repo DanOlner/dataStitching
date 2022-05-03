@@ -1,0 +1,376 @@
+[1] all CoB, all zones, formula: xij11 ~ xij91 + w91q
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-5.2486 -0.0573 -0.0319  0.0089  5.3309 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.033380   0.001790   18.65   <2e-16 ***
+xij91       0.386247   0.006945   55.62   <2e-16 ***
+w91q        0.332781   0.009493   35.06   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1961 on 18081 degrees of freedom
+Multiple R-squared:  0.3228,	Adjusted R-squared:  0.3227 
+F-statistic:  4310 on 2 and 18081 DF,  p-value: < 2.2e-16
+
+[1] Europe, all zones, formula: xij11 ~ xij91 + w91q
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.27203 -0.05215 -0.02161  0.01714  2.26675 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.014303   0.002786   5.133 2.95e-07 ***
+xij91       0.378469   0.012032  31.455  < 2e-16 ***
+w91q        0.502542   0.018870  26.632  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1547 on 5751 degrees of freedom
+Multiple R-squared:  0.4056,	Adjusted R-squared:  0.4054 
+F-statistic:  1962 on 2 and 5751 DF,  p-value: < 2.2e-16
+
+[1] Rich, all zones, formula: xij11 ~ xij91 + w91q
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.4949 -0.0615 -0.0343  0.0107  5.3663 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.061970   0.002311   26.81   <2e-16 ***
+xij91       0.325092   0.009034   35.99   <2e-16 ***
+w91q        0.163716   0.011497   14.24   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1721 on 8217 degrees of freedom
+Multiple R-squared:  0.2369,	Adjusted R-squared:  0.2367 
+F-statistic:  1276 on 2 and 8217 DF,  p-value: < 2.2e-16
+
+[1] Poor, all zones, formula: xij11 ~ xij91 + w91q
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.7481 -0.0563 -0.0224  0.0131  4.0715 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.007241   0.002595    2.79  0.00528 ** 
+xij91       0.409672   0.010044   40.79  < 2e-16 ***
+w91q        0.516781   0.014602   35.39  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2079 on 9861 degrees of freedom
+Multiple R-squared:  0.398,	Adjusted R-squared:  0.3979 
+F-statistic:  3260 on 2 and 9861 DF,  p-value: < 2.2e-16
+
+[1] all CoB, URBAN zones, formula: xij11 ~ xij91 + w91q
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.5445 -0.0871 -0.0411  0.0220  4.0228 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.037870   0.003961   9.562   <2e-16 ***
+xij91       0.424986   0.012159  34.953   <2e-16 ***
+w91q        0.512131   0.017868  28.662   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2572 on 7235 degrees of freedom
+Multiple R-squared:  0.389,	Adjusted R-squared:  0.3889 
+F-statistic:  2303 on 2 and 7235 DF,  p-value: < 2.2e-16
+
+[1] Europe, URBAN zones, formula: xij11 ~ xij91 + w91q
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.58435 -0.08024 -0.03650  0.02261  2.20147 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.027097   0.006324   4.285  1.9e-05 ***
+xij91       0.428279   0.022745  18.830  < 2e-16 ***
+w91q        0.558679   0.034097  16.385  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2143 on 2300 degrees of freedom
+Multiple R-squared:  0.3874,	Adjusted R-squared:  0.3868 
+F-statistic: 727.2 on 2 and 2300 DF,  p-value: < 2.2e-16
+
+[1] Rich, URBAN zones, formula: xij11 ~ xij91 + w91q
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.87850 -0.07346 -0.03073  0.02466  2.18486 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.020121   0.004948   4.066 4.89e-05 ***
+xij91       0.490119   0.018664  26.260  < 2e-16 ***
+w91q        0.530100   0.027992  18.937  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1933 on 3287 degrees of freedom
+Multiple R-squared:  0.4162,	Adjusted R-squared:  0.4159 
+F-statistic:  1172 on 2 and 3287 DF,  p-value: < 2.2e-16
+
+[1] Poor, URBAN zones, formula: xij11 ~ xij91 + w91q
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.7405 -0.0986 -0.0485  0.0219  4.0491 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.046890   0.006024   7.783 8.96e-15 ***
+xij91       0.404005   0.016254  24.855  < 2e-16 ***
+w91q        0.505298   0.023789  21.240  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2998 on 3945 degrees of freedom
+Multiple R-squared:  0.3789,	Adjusted R-squared:  0.3786 
+F-statistic:  1203 on 2 and 3945 DF,  p-value: < 2.2e-16
+
+[1] all CoB, all zones, formula: xij11 ~ xij91 + w91q + migShareMinusOwn91 + lph91 + hsperacre91 + lpophs91 + ea_ttwa91
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.7258 -0.0578 -0.0156  0.0285  5.2565 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        -0.5876062  0.0510565 -11.509  < 2e-16 ***
+xij91               0.3327119  0.0067263  49.464  < 2e-16 ***
+w91q                0.2181808  0.0092620  23.557  < 2e-16 ***
+migShareMinusOwn91  0.0091527  0.0007069  12.948  < 2e-16 ***
+lph91               0.0182253  0.0040452   4.505 6.67e-06 ***
+hsperacre91         0.0110848  0.0003899  28.429  < 2e-16 ***
+lpophs91           -0.1302092  0.0116268 -11.199  < 2e-16 ***
+ea_ttwa91           0.0056631  0.0004117  13.755  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1847 on 18076 degrees of freedom
+Multiple R-squared:  0.3999,	Adjusted R-squared:  0.3996 
+F-statistic:  1721 on 7 and 18076 DF,  p-value: < 2.2e-16
+
+[1] Europe, all zones, formula: xij11 ~ xij91 + w91q + migShareMinusOwn91 + lph91 + hsperacre91 + lpophs91 + ea_ttwa91
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.92079 -0.05543 -0.01063  0.03595  2.04107 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        -0.8286111  0.0699672 -11.843  < 2e-16 ***
+xij91               0.3226636  0.0110451  29.213  < 2e-16 ***
+w91q                0.3012033  0.0179653  16.766  < 2e-16 ***
+migShareMinusOwn91  0.0096456  0.0009264  10.411  < 2e-16 ***
+lph91               0.0278195  0.0054317   5.122 3.13e-07 ***
+hsperacre91         0.0108912  0.0005309  20.516  < 2e-16 ***
+lpophs91           -0.1403086  0.0155393  -9.029  < 2e-16 ***
+ea_ttwa91           0.0072515  0.0005622  12.899  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1392 on 5746 degrees of freedom
+Multiple R-squared:  0.5188,	Adjusted R-squared:  0.5182 
+F-statistic: 885.1 on 7 and 5746 DF,  p-value: < 2.2e-16
+
+[1] Rich, all zones, formula: xij11 ~ xij91 + w91q + migShareMinusOwn91 + lph91 + hsperacre91 + lpophs91 + ea_ttwa91
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.5204 -0.0575 -0.0117  0.0359  5.2437 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        -1.2565380  0.0613545 -20.480  < 2e-16 ***
+xij91               0.2490488  0.0080331  31.003  < 2e-16 ***
+w91q                0.0725949  0.0101463   7.155 9.10e-13 ***
+migShareMinusOwn91  0.0129233  0.0008337  15.501  < 2e-16 ***
+lph91               0.0625359  0.0048529  12.886  < 2e-16 ***
+hsperacre91         0.0128229  0.0004625  27.728  < 2e-16 ***
+lpophs91           -0.1061139  0.0139531  -7.605 3.16e-14 ***
+ea_ttwa91           0.0078888  0.0004957  15.913  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1495 on 8212 degrees of freedom
+Multiple R-squared:  0.4247,	Adjusted R-squared:  0.4242 
+F-statistic: 865.9 on 7 and 8212 DF,  p-value: < 2.2e-16
+
+[1] Poor, all zones, formula: xij11 ~ xij91 + w91q + migShareMinusOwn91 + lph91 + hsperacre91 + lpophs91 + ea_ttwa91
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.5286 -0.0582 -0.0162  0.0257  4.0693 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        -0.0119277  0.0757408  -0.157 0.874869    
+xij91               0.3930432  0.0100809  38.989  < 2e-16 ***
+w91q                0.4130557  0.0152075  27.161  < 2e-16 ***
+migShareMinusOwn91  0.0027944  0.0010725   2.605 0.009189 ** 
+lph91              -0.0221297  0.0060078  -3.684 0.000231 ***
+hsperacre91         0.0080678  0.0005891  13.696  < 2e-16 ***
+lpophs91           -0.1462252  0.0172578  -8.473  < 2e-16 ***
+ea_ttwa91           0.0040438  0.0006098   6.632 3.49e-11 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2023 on 9856 degrees of freedom
+Multiple R-squared:  0.4303,	Adjusted R-squared:  0.4299 
+F-statistic:  1063 on 7 and 9856 DF,  p-value: < 2.2e-16
+
+[1] all CoB, URBAN zones, formula: xij11 ~ xij91 + w91q + migShareMinusOwn91 + lph91 + hsperacre91 + lpophs91 + ea_ttwa91
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.3780 -0.0841 -0.0243  0.0426  3.9828 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        -0.4940654  0.0978644  -5.048 4.56e-07 ***
+xij91               0.4006773  0.0118885  33.703  < 2e-16 ***
+w91q                0.3703430  0.0178941  20.696  < 2e-16 ***
+migShareMinusOwn91  0.0069086  0.0012256   5.637 1.80e-08 ***
+lph91              -0.0113363  0.0079690  -1.423    0.155    
+hsperacre91         0.0045870  0.0007476   6.135 8.94e-10 ***
+lpophs91           -0.3376630  0.0244800 -13.793  < 2e-16 ***
+ea_ttwa91           0.0102375  0.0008697  11.771  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2447 on 7230 degrees of freedom
+Multiple R-squared:  0.4472,	Adjusted R-squared:  0.4467 
+F-statistic: 835.5 on 7 and 7230 DF,  p-value: < 2.2e-16
+
+[1] Europe, URBAN zones, formula: xij11 ~ xij91 + w91q + migShareMinusOwn91 + lph91 + hsperacre91 + lpophs91 + ea_ttwa91
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.11746 -0.07668 -0.01483  0.04804  1.97998 
+
+Coefficients:
+                    Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        -1.287087   0.136853  -9.405  < 2e-16 ***
+xij91               0.358652   0.020224  17.734  < 2e-16 ***
+w91q                0.274033   0.031609   8.670  < 2e-16 ***
+migShareMinusOwn91  0.012129   0.001585   7.653 2.88e-14 ***
+lph91               0.027810   0.010797   2.576   0.0101 *  
+hsperacre91         0.008369   0.001020   8.203 3.85e-16 ***
+lpophs91           -0.355497   0.032822 -10.831  < 2e-16 ***
+ea_ttwa91           0.014497   0.001210  11.981  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1857 on 2295 degrees of freedom
+Multiple R-squared:  0.541,	Adjusted R-squared:  0.5396 
+F-statistic: 386.4 on 7 and 2295 DF,  p-value: < 2.2e-16
+
+[1] Rich, URBAN zones, formula: xij11 ~ xij91 + w91q + migShareMinusOwn91 + lph91 + hsperacre91 + lpophs91 + ea_ttwa91
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2.33960 -0.06714 -0.01070  0.04331  1.99806 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        -1.2717381  0.1027518 -12.377  < 2e-16 ***
+xij91               0.4119948  0.0166128  24.800  < 2e-16 ***
+w91q                0.2587361  0.0258421  10.012  < 2e-16 ***
+migShareMinusOwn91  0.0109529  0.0012011   9.119  < 2e-16 ***
+lph91               0.0559711  0.0081332   6.882 7.05e-12 ***
+hsperacre91         0.0082036  0.0007664  10.703  < 2e-16 ***
+lpophs91           -0.3031655  0.0247738 -12.237  < 2e-16 ***
+ea_ttwa91           0.0103937  0.0009092  11.432  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1674 on 3282 degrees of freedom
+Multiple R-squared:  0.5631,	Adjusted R-squared:  0.5622 
+F-statistic: 604.3 on 7 and 3282 DF,  p-value: < 2.2e-16
+
+[1] Poor, URBAN zones, formula: xij11 ~ xij91 + w91q + migShareMinusOwn91 + lph91 + hsperacre91 + lpophs91 + ea_ttwa91
+
+Call:
+lm(formula = lmfunction, data = inputdata)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.6545 -0.1027 -0.0311  0.0442  3.9165 
+
+Coefficients:
+                    Estimate Std. Error t value Pr(>|t|)    
+(Intercept)         0.093433   0.155687   0.600    0.548    
+xij91               0.409102   0.016261  25.159  < 2e-16 ***
+w91q                0.415634   0.024357  17.064  < 2e-16 ***
+migShareMinusOwn91  0.002325   0.002032   1.144    0.253    
+lph91              -0.064891   0.012779  -5.078 3.99e-07 ***
+hsperacre91         0.001554   0.001198   1.298    0.194    
+lpophs91           -0.373050   0.039402  -9.468  < 2e-16 ***
+ea_ttwa91           0.010648   0.001385   7.690 1.85e-14 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2901 on 3940 degrees of freedom
+Multiple R-squared:  0.4189,	Adjusted R-squared:  0.4179 
+F-statistic: 405.8 on 7 and 3940 DF,  p-value: < 2.2e-16
+

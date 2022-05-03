@@ -1,0 +1,47 @@
+[1] Great Britain, formula: xij2011 ~ xij1991 + w1991q + migshareMinusOwn1991
+$closer
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.38004 -0.00323 -0.00106  0.00118  0.96086 
+
+Coefficients:
+                        Estimate  Std. Error t value            Pr(>|t|)    
+(Intercept)          -0.00090708  0.00007391  -12.27 <0.0000000000000002 ***
+xij1991               0.29232317  0.00288002  101.50 <0.0000000000000002 ***
+w1991q                0.27167460  0.00388997   69.84 <0.0000000000000002 ***
+migshareMinusOwn1991  0.00097599  0.00001016   96.06 <0.0000000000000002 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.01746 on 91634 degrees of freedom
+Multiple R-squared:  0.4789,	Adjusted R-squared:  0.4789 
+F-statistic: 2.807e+04 on 3 and 91634 DF,  p-value: < 0.00000000000000022
+
+
+$further
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.84845 -0.00295 -0.00213 -0.00020  1.41357 
+
+Coefficients:
+                       Estimate Std. Error t value             Pr(>|t|)    
+(Intercept)          0.00198562 0.00009055   21.93 < 0.0000000000000002 ***
+xij1991              0.50848716 0.00250805  202.74 < 0.0000000000000002 ***
+w1991q               0.23762987 0.00336288   70.66 < 0.0000000000000002 ***
+migshareMinusOwn1991 0.00009664 0.00001183    8.17 0.000000000000000311 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.02246 on 101816 degrees of freedom
+Multiple R-squared:  0.6519,	Adjusted R-squared:  0.6519 
+F-statistic: 6.356e+04 on 3 and 101816 DF,  p-value: < 0.00000000000000022
+
+

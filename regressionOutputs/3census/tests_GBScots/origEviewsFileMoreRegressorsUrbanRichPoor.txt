@@ -1,0 +1,51 @@
+[1] The original eViewsFile more regressors URBAN RICH vs POOR (1 vs 0), formula: xij2011 ~ xij1991 + lph91 + lpophs91 + migsh91minusown + w91q
+$`0`
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.2323 -0.0999 -0.0316  0.0370  4.0298 
+
+Coefficients:
+                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)      0.714209   0.113780   6.277 3.79e-10 ***
+xij1991          0.381186   0.015288  24.934  < 2e-16 ***
+lph91           -0.032181   0.011735  -2.742  0.00613 ** 
+lpophs91        -0.419379   0.034721 -12.079  < 2e-16 ***
+migsh91minusown  0.004725   0.001875   2.519  0.01179 *  
+w91q             0.422948   0.022871  18.493  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2866 on 4271 degrees of freedom
+Multiple R-squared:  0.4028,	Adjusted R-squared:  0.4021 
+F-statistic:   576 on 5 and 4271 DF,  p-value: < 2.2e-16
+
+
+$`1`
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.70834 -0.06953 -0.01157  0.04504  2.04332 
+
+Coefficients:
+                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)     -0.184095   0.081436  -2.261   0.0239 *  
+xij1991          0.590522   0.019511  30.267  < 2e-16 ***
+lph91            0.047785   0.008447   5.657 1.69e-08 ***
+lpophs91        -0.401505   0.024507 -16.384  < 2e-16 ***
+migsh91minusown  0.009315   0.001255   7.425 1.47e-13 ***
+w91q             0.334402   0.029523  11.327  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1687 on 2955 degrees of freedom
+Multiple R-squared:  0.5684,	Adjusted R-squared:  0.5677 
+F-statistic: 778.4 on 5 and 2955 DF,  p-value: < 2.2e-16
+
+

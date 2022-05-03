@@ -1,0 +1,45 @@
+[1] RICH vs POOR (1 vs 0), formula: xij11 ~ xij91 + w91q
+$`0`
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.83255 -0.00655 -0.00476 -0.00084  1.57651 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.0052099  0.0001771   29.42   <2e-16 ***
+xij91       0.4816239  0.0045213  106.52   <2e-16 ***
+w91q        0.2434310  0.0058376   41.70   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.03324 on 41669 degrees of freedom
+Multiple R-squared:  0.5636,	Adjusted R-squared:  0.5636 
+F-statistic: 2.691e+04 on 2 and 41669 DF,  p-value: < 2.2e-16
+
+
+$`1`
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.64376 -0.00590 -0.00276  0.00144  0.43634 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.0031714  0.0001125   28.18   <2e-16 ***
+xij91       0.4555074  0.0046407   98.16   <2e-16 ***
+w91q        0.3817893  0.0054946   69.48   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.02034 on 46878 degrees of freedom
+Multiple R-squared:  0.6099,	Adjusted R-squared:  0.6099 
+F-statistic: 3.664e+04 on 2 and 46878 DF,  p-value: < 2.2e-16
+
+

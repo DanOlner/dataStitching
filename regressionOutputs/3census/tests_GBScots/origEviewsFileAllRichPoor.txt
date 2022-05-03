@@ -1,0 +1,45 @@
+[1] The original eViewsFile ALL RICH vs POOR (1 vs 0), formula: xij2011 ~ xij1991 + w91q
+$`0`
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.3305 -0.0568 -0.0243  0.0120  4.1080 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.011865   0.002451   4.841 1.31e-06 ***
+xij1991     0.390645   0.009349  41.786  < 2e-16 ***
+w91q        0.499210   0.013742  36.328  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2055 on 10683 degrees of freedom
+Multiple R-squared:  0.3931,	Adjusted R-squared:  0.393 
+F-statistic:  3460 on 2 and 10683 DF,  p-value: < 2.2e-16
+
+
+$`1`
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.5438 -0.0610 -0.0342  0.0111  5.3636 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.063208   0.002473   25.56   <2e-16 ***
+xij1991     0.331132   0.009934   33.33   <2e-16 ***
+w91q        0.147538   0.012156   12.14   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1733 on 7395 degrees of freedom
+Multiple R-squared:  0.217,	Adjusted R-squared:  0.2168 
+F-statistic:  1025 on 2 and 7395 DF,  p-value: < 2.2e-16
+
+

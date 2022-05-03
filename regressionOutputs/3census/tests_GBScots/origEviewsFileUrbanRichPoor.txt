@@ -1,0 +1,45 @@
+[1] The original eViewsFile URBAN RICH vs POOR (1 vs 0), formula: xij2011 ~ xij1991 + w91q
+$`0`
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.3228 -0.0967 -0.0503  0.0210  4.0798 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 0.050342   0.005664   8.888   <2e-16 ***
+xij1991     0.381219   0.015320  24.884   <2e-16 ***
+w91q        0.503125   0.022527  22.335   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2947 on 4274 degrees of freedom
+Multiple R-squared:  0.3677,	Adjusted R-squared:  0.3674 
+F-statistic:  1243 on 2 and 4274 DF,  p-value: < 2.2e-16
+
+
+$`1`
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.01780 -0.07261 -0.02180  0.03027  2.12815 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -0.001475   0.005203  -0.283    0.777    
+xij1991      0.625883   0.021023  29.771   <2e-16 ***
+w91q         0.530051   0.031004  17.096   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.1847 on 2958 degrees of freedom
+Multiple R-squared:  0.4823,	Adjusted R-squared:  0.4819 
+F-statistic:  1378 on 2 and 2958 DF,  p-value: < 2.2e-16
+
+

@@ -1,0 +1,220 @@
+[1] Glasgow, formula: xij11 ~ xij91 + w91q + migShareMinusOwn91 + lph91 + hsperacre91 + lpophs91 + ea91
+$poor
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-4.561 -0.373 -0.105  0.188 13.668 
+
+Coefficients:
+                   Estimate Std. Error t value             Pr(>|t|)    
+(Intercept)         2.56889    0.65170    3.94             0.000085 ***
+xij91               0.31408    0.01997   15.73 < 0.0000000000000002 ***
+w91q                0.25725    0.02979    8.63 < 0.0000000000000002 ***
+migShareMinusOwn91  0.02126    0.00799    2.66              0.00786 ** 
+lph91              -0.06106    0.07981   -0.77              0.44438    
+hsperacre91        -0.02088    0.00564   -3.70              0.00022 ***
+lpophs91           -1.86031    0.20593   -9.03 < 0.0000000000000002 ***
+ea91               -0.00103    0.00343   -0.30              0.76409    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.912 on 1516 degrees of freedom
+Multiple R-squared:  0.375,	Adjusted R-squared:  0.372 
+F-statistic:  130 on 7 and 1516 DF,  p-value: <0.0000000000000002
+
+
+$rich
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-2.047 -0.309 -0.060  0.197  5.535 
+
+Coefficients:
+                    Estimate Std. Error t value             Pr(>|t|)    
+(Intercept)        -1.099424   0.484766   -2.27              0.02350 *  
+xij91               0.317655   0.023459   13.54 < 0.0000000000000002 ***
+w91q                0.215531   0.038284    5.63          0.000000022 ***
+migShareMinusOwn91  0.052346   0.005402    9.69 < 0.0000000000000002 ***
+lph91               0.216388   0.058994    3.67              0.00025 ***
+hsperacre91        -0.000338   0.004371   -0.08              0.93847    
+lpophs91           -1.988375   0.150994  -13.17 < 0.0000000000000002 ***
+ea91                0.006847   0.002562    2.67              0.00763 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.615 on 1262 degrees of freedom
+Multiple R-squared:  0.512,	Adjusted R-squared:  0.51 
+F-statistic:  189 on 7 and 1262 DF,  p-value: <0.0000000000000002
+
+
+[1] Edinburgh, formula: xij11 ~ xij91 + w91q + migShareMinusOwn91 + lph91 + hsperacre91 + lpophs91 + ea91
+$poor
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-4.537 -0.699 -0.146  0.402 10.689 
+
+Coefficients:
+                   Estimate Std. Error t value             Pr(>|t|)    
+(Intercept)         10.2514     1.5372    6.67       0.000000000050 ***
+xij91                0.4206     0.0376   11.19 < 0.0000000000000002 ***
+w91q                 0.3885     0.0590    6.59       0.000000000084 ***
+migShareMinusOwn91  -0.1335     0.0305   -4.38       0.000013639642 ***
+lph91               -0.3815     0.2073   -1.84               0.0660 .  
+hsperacre91          0.0458     0.0104    4.40       0.000012387879 ***
+lpophs91            -1.9495     0.4947   -3.94       0.000088818017 ***
+ea91                -0.0454     0.0148   -3.07               0.0022 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1.28 on 760 degrees of freedom
+Multiple R-squared:  0.402,	Adjusted R-squared:  0.396 
+F-statistic: 72.9 on 7 and 760 DF,  p-value: <0.0000000000000002
+
+
+$rich
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-3.574 -0.466 -0.034  0.371  5.984 
+
+Coefficients:
+                   Estimate Std. Error t value             Pr(>|t|)    
+(Intercept)          2.8997     1.1002    2.64               0.0086 ** 
+xij91                0.4359     0.0299   14.60 < 0.0000000000000002 ***
+w91q                 0.1213     0.0479    2.53               0.0116 *  
+migShareMinusOwn91   0.1266     0.0203    6.22        0.00000000089 ***
+lph91               -0.6908     0.1473   -4.69        0.00000333933 ***
+hsperacre91          0.0708     0.0075    9.44 < 0.0000000000000002 ***
+lpophs91            -0.4947     0.3420   -1.45               0.1485    
+ea91                 0.0484     0.0105    4.59        0.00000526354 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.835 on 632 degrees of freedom
+Multiple R-squared:  0.672,	Adjusted R-squared:  0.668 
+F-statistic:  185 on 7 and 632 DF,  p-value: <0.0000000000000002
+
+
+[1] Aberdeen, formula: xij11 ~ xij91 + w91q + migShareMinusOwn91 + lph91 + hsperacre91 + lpophs91 + ea91
+$poor
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-7.682 -2.344 -0.274  1.801 11.615 
+
+Coefficients:
+                   Estimate Std. Error t value     Pr(>|t|)    
+(Intercept)         73.0237    14.7144    4.96 0.0000016615 ***
+xij91                0.3243     0.0508    6.38 0.0000000016 ***
+w91q                 0.1884     0.0720    2.62      0.00970 ** 
+migShareMinusOwn91   0.8432     0.3040    2.77      0.00616 ** 
+lph91               -1.8096     1.7130   -1.06      0.29228    
+hsperacre91         -0.4132     0.1136   -3.64      0.00037 ***
+lpophs91            -8.1429     2.6041   -3.13      0.00207 ** 
+ea91                -0.4815     0.1604   -3.00      0.00308 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 3.36 on 172 degrees of freedom
+Multiple R-squared:  0.573,	Adjusted R-squared:  0.556 
+F-statistic:   33 on 7 and 172 DF,  p-value: <0.0000000000000002
+
+
+$rich
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-11.997  -2.126  -0.413   1.697  10.887 
+
+Coefficients:
+                   Estimate Std. Error t value    Pr(>|t|)    
+(Intercept)         68.7790    17.4101    3.95     0.00012 ***
+xij91                0.3297     0.0586    5.62 0.000000095 ***
+w91q                 0.0921     0.0667    1.38     0.16981    
+migShareMinusOwn91   1.7090     0.3229    5.29 0.000000447 ***
+lph91               -2.3450     1.9150   -1.22     0.22276    
+hsperacre91         -0.4378     0.1285   -3.41     0.00086 ***
+lpophs91            -8.4914     2.7611   -3.08     0.00252 ** 
+ea91                -0.4006     0.1769   -2.26     0.02508 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 3.31 on 142 degrees of freedom
+Multiple R-squared:  0.658,	Adjusted R-squared:  0.641 
+F-statistic:   39 on 7 and 142 DF,  p-value: <0.0000000000000002
+
+
+[1] Dundee, formula: xij11 ~ xij91 + w91q + migShareMinusOwn91 + lph91 + hsperacre91 + lpophs91 + ea91
+$poor
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-9.011 -2.231 -0.497  1.062 25.507 
+
+Coefficients:
+                   Estimate Std. Error t value   Pr(>|t|)    
+(Intercept)          3.2176    11.6439    0.28       0.78    
+xij91                0.2840     0.0598    4.75 0.00000363 ***
+w91q                 0.4752     0.1153    4.12 0.00005358 ***
+migShareMinusOwn91   0.0564     0.1252    0.45       0.65    
+lph91                0.5431     1.5700    0.35       0.73    
+hsperacre91         -0.1291     0.1002   -1.29       0.20    
+lpophs91           -16.0982     3.0493   -5.28 0.00000031 ***
+ea91                 0.0551     0.0806    0.68       0.49    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 4.03 on 220 degrees of freedom
+Multiple R-squared:  0.417,	Adjusted R-squared:  0.399 
+F-statistic: 22.5 on 7 and 220 DF,  p-value: <0.0000000000000002
+
+
+$rich
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-6.103 -2.284 -0.252  1.525 16.966 
+
+Coefficients:
+                   Estimate Std. Error t value       Pr(>|t|)    
+(Intercept)         17.8541    10.2796    1.74        0.08411 .  
+xij91                0.1861     0.0668    2.78        0.00592 ** 
+w91q                 0.0376     0.1180    0.32        0.75055    
+migShareMinusOwn91   0.2601     0.1054    2.47        0.01454 *  
+lph91               -0.8072     1.4162   -0.57        0.56941    
+hsperacre91         -0.3142     0.0866   -3.63        0.00037 ***
+lpophs91           -19.3286     2.7321   -7.07 0.000000000031 ***
+ea91                 0.1108     0.0736    1.50        0.13410    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 3.41 on 182 degrees of freedom
+Multiple R-squared:  0.356,	Adjusted R-squared:  0.331 
+F-statistic: 14.3 on 7 and 182 DF,  p-value: 0.00000000000000847
+
+

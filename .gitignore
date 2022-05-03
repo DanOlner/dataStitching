@@ -11,7 +11,7 @@
 /shp_local/*
 /Housing/*
 /R_outputs/*
-/regressionOutputs/*
+#/regressionOutputs/*
 /otherCensusData/*
 /flowData/*
 /rothShefOutputs/*
@@ -24,3 +24,11 @@
 .sync/*
 *.Rproj
 *.pyc
+econinactive_percents_england91wards*
+
+!R_data/sheet5.rds
+!R_data/sheet3census.rds
+!R_data/citySheetsList3census.rds
+
+
+

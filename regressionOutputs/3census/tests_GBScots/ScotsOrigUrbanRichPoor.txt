@@ -1,0 +1,90 @@
+[1] GB-new-scots: Scots orig urban in new data RICH vs POOR (1 vs 0), formula: xij11 ~ xij91 + w91q
+$`0`
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.8229 -0.1464 -0.0708  0.0339  4.8178 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.07949    0.01011    7.86 5.57e-15 ***
+xij91        0.34480    0.01699   20.29  < 2e-16 ***
+w91q         0.39299    0.02325   16.90  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.4127 on 2629 degrees of freedom
+Multiple R-squared:  0.3626,	Adjusted R-squared:  0.3622 
+F-statistic: 747.9 on 2 and 2629 DF,  p-value: < 2.2e-16
+
+
+$`1`
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.8497 -0.1255 -0.0390  0.0528  3.3907 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.02761    0.00777   3.554 0.000386 ***
+xij91        0.59658    0.01725  34.586  < 2e-16 ***
+w91q         0.32923    0.02208  14.910  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2893 on 2958 degrees of freedom
+Multiple R-squared:  0.4846,	Adjusted R-squared:  0.4842 
+F-statistic:  1390 on 2 and 2958 DF,  p-value: < 2.2e-16
+
+
+[1] Scot-old-scots: Scots orig urban zones in new data RICH vs POOR (1 vs 0), formula: xij11 ~ xij91 + w91q
+$`0`
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.8846 -0.1449 -0.0691  0.0357  4.8010 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.07598    0.01007   7.548 6.08e-14 ***
+xij91        0.35191    0.01698  20.724  < 2e-16 ***
+w91q         0.39679    0.02322  17.089  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.41 on 2629 degrees of freedom
+Multiple R-squared:  0.371,	Adjusted R-squared:  0.3705 
+F-statistic: 775.3 on 2 and 2629 DF,  p-value: < 2.2e-16
+
+
+$`1`
+
+Call:
+lm(formula = lmfunction, data = x)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.8495 -0.1255 -0.0390  0.0530  3.3908 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.02763    0.00777   3.557 0.000382 ***
+xij91        0.59654    0.01725  34.584  < 2e-16 ***
+w91q         0.32918    0.02208  14.908  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.2893 on 2958 degrees of freedom
+Multiple R-squared:  0.4845,	Adjusted R-squared:  0.4842 
+F-statistic:  1390 on 2 and 2958 DF,  p-value: < 2.2e-16
+
+
